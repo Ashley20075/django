@@ -1,0 +1,875 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - BarberSpringfield</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        /* ========== ESTILOS GENERALES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0B0A08;
+            color: #F5EFE6;
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+        }
+
+        /* ========== NAVBAR ========== */
+        .navbar-custom {
+            background-color: #0B0A08;
+            border-bottom: 2px solid #F4C542;
+            padding: 0.8rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1050;
+        }
+
+        .navbar-brand-custom {
+            font-family: 'Playfair Display', 'Georgia', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #F4C542 !important;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand-custom span {
+            color: #C9A87C;
+        }
+
+        .navbar-brand-custom img {
+            height: 40px;
+            width: 40px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 2px solid #3F2E22;
+            color: #F5EFE6 !important;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background-color: #3F2E22;
+            border-color: #F4C542;
+            transform: scale(1.02);
+        }
+
+        .nav-btn.active {
+            background-color: #F4C542;
+            border-color: #F4C542;
+            color: #0B0A08 !important;
+            box-shadow: 0 0 20px rgba(244, 197, 66, 0.3);
+        }
+
+        .btn-logout-custom {
+            background: transparent;
+            border: 2px solid #3F2E22;
+            color: #F5EFE6;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-logout-custom:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .user-info-custom {
+            background-color: #2A211B;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: #F5EFE6;
+        }
+
+        .user-info-custom i {
+            color: #F4C542;
+            font-size: 1.2rem;
+        }
+
+        /* ========== BARRA DE ACCIONES ========== */
+        .action-bar-sticky {
+            position: sticky;
+            top: 76px;
+            z-index: 1040;
+            background: #0B0A08;
+            padding: 18px 0;
+            border-bottom: 3px solid #F4C542;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-group-modern {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-modern {
+            background: linear-gradient(135deg, #F4C542 0%, #FFD966 100%);
+            border: none;
+            border-radius: 50px;
+            padding: 14px 28px;
+            color: #0B0A08;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(244, 197, 66, 0.35);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            min-width: 180px;
+            flex: 1 1 auto;
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-modern:hover::before {
+            left: 100%;
+        }
+
+        .btn-modern:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(244, 197, 66, 0.5);
+            background: linear-gradient(135deg, #FFD966 0%, #F4C542 100%);
+        }
+
+        /* ========== TARJETAS DE ESTADÍSTICAS ========== */
+        .stat-card {
+            background-color: #1E1A15;
+            border-radius: 20px;
+            border-left: 4px solid #F4C542;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(244, 197, 66, 0.2);
+        }
+
+        .stat-card i {
+            color: #F4C542;
+            font-size: 2.5rem;
+        }
+
+        .stat-card h5 {
+            color: #FFD966;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card h2 {
+            color: #F4C542;
+            font-size: 2.2rem;
+            font-weight: bold;
+        }
+
+        /* ========== TABLAS ========== */
+        .card-custom {
+            background-color: #1E1A15;
+            border-radius: 20px;
+            border: 1px solid rgba(244, 197, 66, 0.2);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background-color: #0B0A08;
+            border-bottom: 2px solid #F4C542;
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            color: #FFD966;
+        }
+
+        .table-custom {
+            background-color: transparent;
+            margin-bottom: 0;
+        }
+
+        .table-custom thead th {
+            color: #FFD966;
+            border-bottom: 2px solid #F4C542;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+        }
+
+        .table-custom tbody td {
+            color: #F5EFE6;
+            vertical-align: middle;
+            padding: 0.75rem 1rem;
+        }
+
+        .table-custom tbody tr:hover {
+            background-color: rgba(244, 197, 66, 0.05);
+        }
+
+        /* ========== MODALES ========== */
+        .modal-content-custom {
+            background-color: #1E1A15 !important;
+            border: 1px solid rgba(244, 197, 66, 0.3) !important;
+        }
+
+        .modal-header-custom {
+            border-bottom: 2px solid #F4C542 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .modal-footer-custom {
+            border-top: 2px solid #F4C542 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .bg-dark-input {
+            background-color: #2A211B !important;
+            border: 1px solid #3F2E22 !important;
+            color: #F5EFE6 !important;
+        }
+
+        .bg-dark-input:focus {
+            background-color: #352b23 !important;
+            border-color: #F4C542 !important;
+            box-shadow: 0 0 0 0.2rem rgba(244, 197, 66, 0.25);
+        }
+
+        .form-label-custom {
+            color: #FFD966;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ========== BADGES ========== */
+        .badge-stock-bajo {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .badge-stock-medio {
+            background-color: #ffc107;
+            color: #0B0A08;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .badge-stock-bueno {
+            background-color: #198754;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        /* ========== UTILIDADES ========== */
+        .text-yellow {
+            color: #F4C542 !important;
+        }
+        .text-light-brown {
+            color: #C9A87C !important;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .navbar-brand-custom {
+                font-size: 1.3rem;
+            }
+            .nav-btn, .btn-logout-custom {
+                font-size: 0.8rem;
+                padding: 0.3rem 0.8rem;
+            }
+            .action-bar-sticky {
+                top: 70px;
+                padding: 12px 0;
+            }
+            .btn-modern {
+                font-size: 13px;
+                padding: 11px 18px;
+                min-width: 140px;
+            }
+            .stat-card h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .btn-group-modern {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .btn-modern {
+                font-size: 14px;
+                padding: 13px 20px;
+                min-width: unset;
+                width: 100%;
+            }
+            .stat-card {
+                padding: 1rem;
+            }
+            .stat-card h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar-custom">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between w-100 flex-wrap gap-2">
+                <a class="navbar-brand-custom" href="{% url 'inicio' %}">
+                    <img src="{% static 'logo.jpeg' %}" alt="Logo"> Barber <span>Springfield</span>
+                </a>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <div class="user-info-custom">
+                        <i class="bi bi-person-circle"></i>
+                        <span>{{ user.username }}</span>
+                    </div>
+                    <!-- 🔥 CORREGIDO: Panel Admin con namespace -->
+                    <a href="{% url 'administracion:panel_admin' %}" class="nav-btn">
+                        <i class="bi bi-speedometer2"></i> Panel Admin
+                    </a>
+                    <a href="{% url 'inventario:dashboard' %}" class="nav-btn active">
+                        <i class="bi bi-boxes"></i> Inventario
+                    </a>
+                    <button class="btn-logout-custom" data-bs-toggle="modal" data-bs-target="#modalCerrarSesion">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== MODAL CERRAR SESIÓN ========== -->
+    <div class="modal fade" id="modalCerrarSesion" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-custom">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title text-yellow">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-check-circle-fill text-yellow fs-1 mb-3 d-inline-block"></i>
+                    <p class="fs-5">¿Estás seguro que deseas cerrar sesión?</p>
+                    <p class="text-light-brown">Serás redirigido al inicio.</p>
+                </div>
+                <div class="modal-footer modal-footer-custom">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn-modern" style="min-width:auto; padding:10px 30px; flex:0 1 auto;" onclick="window.location.href='{% url 'logout' %}'">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CONTENIDO PRINCIPAL ========== -->
+    <div class="container py-4">
+
+        <!-- Título y breadcrumb -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+            <div>
+                <h1 class="text-yellow" style="font-family:'Playfair Display',serif;">
+                    <i class="bi bi-boxes"></i> Inventario
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <!-- 🔥 CORREGIDO: Panel Admin con namespace -->
+                        <li class="breadcrumb-item"><a href="{% url 'administracion:panel_admin' %}" class="text-light-brown">Panel Admin</a></li>
+                        <li class="breadcrumb-item active text-yellow" aria-current="page">Inventario</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <!-- 🔥 CORREGIDO: Panel Admin con namespace -->
+                <a href="{% url 'administracion:panel_admin' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al Panel
+                </a>
+            </div>
+        </div>
+
+        <!-- Mensajes -->
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- ========== BARRA DE ACCIONES ========== -->
+        <div class="action-bar-sticky">
+            <div class="container">
+                <div class="btn-group-modern">
+                    <button class="btn-modern" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Agregar Producto</span>
+                    </button>
+                    <a href="#reportes" class="btn-modern">
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+                        <span>Reportes</span>
+                    </a>
+                    <button class="btn-modern" onclick="window.location.reload();">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <span>Actualizar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== TARJETAS DE ESTADÍSTICAS ========== -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card text-center">
+                    <i class="bi bi-box-seam"></i>
+                    <h5>Total Productos</h5>
+                    <h2>{{ total_productos }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card text-center" style="border-left-color: #198754;">
+                    <i class="bi bi-check-circle" style="color: #198754;"></i>
+                    <h5>Stock Total</h5>
+                    <h2>{{ stock_total }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card text-center" style="border-left-color: #dc3545;">
+                    <i class="bi bi-exclamation-triangle" style="color: #dc3545;"></i>
+                    <h5>Stock Bajo</h5>
+                    <h2 class="text-danger">{{ productos_bajo_stock }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card text-center" style="border-left-color: #0d6efd;">
+                    <i class="bi bi-arrow-left-right" style="color: #0d6efd;"></i>
+                    <h5>Movimientos</h5>
+                    <h2>{{ ultimos_movimientos|length }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== TABLA DE PRODUCTOS ========== -->
+        <div class="card-custom">
+            <div class="card-header-custom d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-list-ul"></i> Productos Registrados</span>
+                <span class="badge bg-warning text-dark">{{ productos|length }} productos</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-custom table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;">#</th>
+                                <th style="width: 20%;">Producto</th>
+                                <th style="width: 12%;">Stock</th>
+                                <th style="width: 12%;">Mínimo</th>
+                                <th style="width: 15%;">Precio</th>
+                                <th style="width: 15%;">Estado</th>
+                                <th style="width: 21%;" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for producto in productos %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <strong>{{ producto.nombre }}</strong>
+                                    {% if producto.descripcion %}
+                                    <br><small class="text-light-brown">{{ producto.descripcion|truncatechars:30 }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="fw-bold {% if producto.stock_actual <= producto.stock_minimo %}text-danger{% endif %}">
+                                        {{ producto.stock_actual }}
+                                    </span>
+                                </td>
+                                <td>{{ producto.stock_minimo }}</td>
+                                <td>${{ producto.precio_unitario|floatformat:2 }}</td>
+                                <td>
+                                    {% if producto.stock_actual <= 0 %}
+                                        <span class="badge-stock-bajo"><i class="bi bi-x-circle"></i> Agotado</span>
+                                    {% elif producto.stock_actual <= producto.stock_minimo %}
+                                        <span class="badge-stock-bajo"><i class="bi bi-exclamation-circle"></i> Bajo stock</span>
+                                    {% elif producto.stock_actual <= producto.stock_minimo|add:"5" %}
+                                        <span class="badge-stock-medio"><i class="bi bi-dash-circle"></i> Medio</span>
+                                    {% else %}
+                                        <span class="badge-stock-bueno"><i class="bi bi-check-circle"></i> Suficiente</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{% url 'inventario:movimiento' producto.id %}" class="btn btn-outline-warning" title="Registrar movimiento">
+                                            <i class="bi bi-arrow-left-right"></i>
+                                        </a>
+                                        <a href="{% url 'inventario:editar' producto.id %}" class="btn btn-outline-info" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{% url 'inventario:eliminar' producto.id %}" class="btn btn-outline-danger" title="Eliminar" onclick="return confirm('¿Eliminar este producto?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-light-brown py-5">
+                                    <i class="bi bi-box-seam fs-1 d-block mb-3" style="color: #C9A87C;"></i>
+                                    <h5>No hay productos registrados</h5>
+                                    <p class="mb-0">Haz clic en "Agregar Producto" para comenzar.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ÚLTIMOS MOVIMIENTOS ========== -->
+        {% if ultimos_movimientos %}
+        <div class="card-custom">
+            <div class="card-header-custom d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock-history"></i> Últimos Movimientos</span>
+                <span class="badge bg-info text-dark">{{ ultimos_movimientos|length }} registros</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-custom table-sm table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Usuario</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mov in ultimos_movimientos %}
+                            <tr>
+                                <td>{{ mov.producto.nombre }}</td>
+                                <td>
+                                    <span class="badge {% if mov.tipo == 'ENTRADA' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                        <i class="bi {% if mov.tipo == 'ENTRADA' %}bi-arrow-down{% else %}bi-arrow-up{% endif %}"></i>
+                                        {{ mov.get_tipo_display }}
+                                    </span>
+                                </td>
+                                <td>{{ mov.cantidad }}</td>
+                                <td>{{ mov.usuario.username|default:"Sistema" }}</td>
+                                <td>{{ mov.fecha|date:"d/m/Y H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ========== REPORTES ========== -->
+        <div id="reportes" class="card-custom">
+            <div class="card-header-custom">
+                <span><i class="bi bi-file-earmark-bar-graph"></i> Reportes de Inventario</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-dark rounded border border-secondary">
+                            <h6 class="text-yellow"><i class="bi bi-exclamation-triangle"></i> Productos con bajo stock</h6>
+                            <ul class="list-unstyled mb-0">
+                                {% for p in productos %}
+                                    {% if p.stock_actual <= p.stock_minimo %}
+                                    <li class="text-light-brown py-1">
+                                        <span class="text-danger">●</span> {{ p.nombre }} - Stock: {{ p.stock_actual }}
+                                    </li>
+                                    {% endif %}
+                                {% empty %}
+                                    <li class="text-light-brown">No hay productos con bajo stock.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-dark rounded border border-secondary">
+                            <h6 class="text-yellow"><i class="bi bi-check-circle"></i> Resumen de stock</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li class="text-light-brown py-1">
+                                    <span class="text-success">●</span> Stock total: <strong class="text-white">{{ stock_total }}</strong>
+                                </li>
+                                <li class="text-light-brown py-1">
+                                    <span class="text-warning">●</span> Productos activos: <strong class="text-white">{{ total_productos }}</strong>
+                                </li>
+                                <li class="text-light-brown py-1">
+                                    <span class="text-danger">●</span> Productos críticos: <strong class="text-white">{{ productos_bajo_stock }}</strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ======================================================================== -->
+    <!-- ========== MODALES ========== -->
+    <!-- ======================================================================== -->
+
+    <!-- ===== MODAL AGREGAR PRODUCTO ===== -->
+    <div class="modal fade" id="modalAgregarProducto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-custom">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title text-yellow"><i class="bi bi-plus-circle"></i> Nuevo Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{% url 'inventario:agregar' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label-custom">Nombre del producto *</label>
+                            <input type="text" name="nombre" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label-custom">Descripción</label>
+                            <textarea name="descripcion" class="form-control bg-dark-input" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label-custom">Stock inicial *</label>
+                                <input type="number" name="stock_actual" class="form-control bg-dark-input" required min="0" value="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label-custom">Stock mínimo *</label>
+                                <input type="number" name="stock_minimo" class="form-control bg-dark-input" required min="0" value="5">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label-custom">Precio unitario *</label>
+                            <input type="number" name="precio_unitario" class="form-control bg-dark-input" required step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="modal-footer modal-footer-custom">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn-modern" style="min-width:auto; padding:10px 30px; flex:0 1 auto;">
+                            <i class="bi bi-plus-circle"></i> Agregar Producto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL EDITAR PRODUCTO ===== -->
+    <div class="modal fade" id="modalEditarProducto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-custom">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title text-yellow"><i class="bi bi-pencil"></i> Editar Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" id="formEditarProducto">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label-custom">Nombre del producto *</label>
+                            <input type="text" name="nombre" id="editProductoNombre" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label-custom">Descripción</label>
+                            <textarea name="descripcion" id="editProductoDescripcion" class="form-control bg-dark-input" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label-custom">Stock actual *</label>
+                                <input type="number" name="stock_actual" id="editProductoStock" class="form-control bg-dark-input" required min="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label-custom">Stock mínimo *</label>
+                                <input type="number" name="stock_minimo" id="editProductoMinimo" class="form-control bg-dark-input" required min="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label-custom">Precio unitario *</label>
+                            <input type="number" name="precio_unitario" id="editProductoPrecio" class="form-control bg-dark-input" required step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="modal-footer modal-footer-custom">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn-modern" style="min-width:auto; padding:10px 30px; flex:0 1 auto;">
+                            <i class="bi bi-check-circle"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL MOVIMIENTO ===== -->
+    <div class="modal fade" id="modalMovimiento" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-custom">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title text-yellow"><i class="bi bi-arrow-left-right"></i> Registrar Movimiento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" id="formMovimiento">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="alert alert-info bg-dark text-light-brown border-warning">
+                            <i class="bi bi-info-circle"></i>
+                            Producto: <strong class="text-yellow" id="movimientoProductoNombre"></strong>
+                            <br>
+                            Stock actual: <strong class="text-white" id="movimientoStockActual"></strong>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label-custom">Tipo de movimiento *</label>
+                            <select name="tipo" id="movimientoTipo" class="form-select bg-dark-input" required>
+                                <option value="ENTRADA">📥 Entrada (Agregar stock)</option>
+                                <option value="SALIDA">📤 Salida (Quitar stock)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label-custom">Cantidad *</label>
+                            <input type="number" name="cantidad" id="movimientoCantidad" class="form-control bg-dark-input" required min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label-custom">Nota (opcional)</label>
+                            <textarea name="nota" id="movimientoNota" class="form-control bg-dark-input" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer modal-footer-custom">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn-modern" style="min-width:auto; padding:10px 30px; flex:0 1 auto;">
+                            <i class="bi bi-check-circle"></i> Registrar Movimiento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL ELIMINAR PRODUCTO ===== -->
+    <div class="modal fade" id="modalEliminarProducto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-custom">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title text-danger"><i class="bi bi-exclamation-triangle"></i> Eliminar Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" id="formEliminarProducto">
+                    {% csrf_token %}
+                    <div class="modal-body text-center">
+                        <i class="bi bi-trash3 text-danger fs-1 mb-3 d-inline-block"></i>
+                        <p class="fs-5">¿Estás seguro de eliminar este producto?</p>
+                        <p class="text-light-brown">Producto: <strong class="text-white" id="eliminarProductoNombre"></strong></p>
+                        <p class="text-warning small">⚠️ Esta acción no se puede deshacer.</p>
+                    </div>
+                    <div class="modal-footer modal-footer-custom">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Eliminar Producto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ===== MODAL EDITAR PRODUCTO =====
+        document.getElementById('modalEditarProducto').addEventListener('show.bs.modal', function(e) {
+            const btn = e.relatedTarget;
+            document.getElementById('editProductoNombre').value = btn.dataset.nombre || '';
+            document.getElementById('editProductoDescripcion').value = btn.dataset.descripcion || '';
+            document.getElementById('editProductoStock').value = btn.dataset.stock || 0;
+            document.getElementById('editProductoMinimo').value = btn.dataset.minimo || 0;
+            document.getElementById('editProductoPrecio').value = btn.dataset.precio || 0;
+            document.getElementById('formEditarProducto').action = `/inventario/editar/${btn.dataset.id}/`;
+        });
+
+        // ===== MODAL MOVIMIENTO =====
+        document.getElementById('modalMovimiento').addEventListener('show.bs.modal', function(e) {
+            const btn = e.relatedTarget;
+            document.getElementById('movimientoProductoNombre').textContent = btn.dataset.nombre || 'Producto';
+            document.getElementById('movimientoStockActual').textContent = btn.dataset.stock || 0;
+            document.getElementById('formMovimiento').action = `/inventario/movimiento/${btn.dataset.id}/`;
+            document.getElementById('movimientoTipo').value = 'ENTRADA';
+            document.getElementById('movimientoCantidad').value = '';
+            document.getElementById('movimientoNota').value = '';
+        });
+
+        // ===== MODAL ELIMINAR PRODUCTO =====
+        document.getElementById('modalEliminarProducto').addEventListener('show.bs.modal', function(e) {
+            const btn = e.relatedTarget;
+            document.getElementById('eliminarProductoNombre').textContent = btn.dataset.nombre || 'Producto';
+            document.getElementById('formEliminarProducto').action = `/inventario/eliminar/${btn.dataset.id}/`;
+        });
+    </script>
+
+</body>
+
+</html>

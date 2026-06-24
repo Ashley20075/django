@@ -1,0 +1,461 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuenta | BarberSpringfield</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const perfil = document.getElementById("perfil");
+            const turnos = document.getElementById("turnos");
+            const linkPerfil = document.querySelector('a[href="#perfil"]');
+            const linkTurnos = document.querySelector('a[href="#turnos"]');
+
+            function actualizarMenu() {
+                const posicion = window.scrollY + 200;
+                if (posicion >= turnos.offsetTop) {
+                    linkPerfil.classList.remove("active");
+                    linkTurnos.classList.add("active");
+                } else {
+                    linkTurnos.classList.remove("active");
+                    linkPerfil.classList.add("active");
+                }
+            }
+            window.addEventListener("scroll", actualizarMenu);
+            actualizarMenu();
+        });
+    </script>
+<script>
+    const preciosServicios = {
+        {% for servicio in servicios %}
+        "{{ servicio.nombre }}": {{ servicio.precio }},
+        {% endfor %}
+    };
+
+    const precioAdicional = 5000;
+
+    function formatPeso(valor) {
+        return '$' + valor.toLocaleString('es-CO');
+    }
+
+    function calcularTotal() {
+        const servicioRadio  = document.querySelector('input[name="servicio"]:checked');
+        const checkboxesAdic = document.querySelectorAll('input[name="adicionales"]:checked');
+        const checkboxesProd = document.querySelectorAll('input[name="productos"]:checked');
+
+        const nombreServicio = servicioRadio ? servicioRadio.value : '';
+        const precioBase     = preciosServicios[nombreServicio] || 0;
+        const precioAdic     = checkboxesAdic.length * precioAdicional;
+
+        let precioProd = 0;
+        checkboxesProd.forEach(function(chk) {
+            precioProd += parseInt(chk.dataset.precio) || 0;
+        });
+
+        const total = precioBase + precioAdic + precioProd;
+
+        document.getElementById('precioBase').textContent        = formatPeso(precioBase);
+        document.getElementById('precioAdicionales').textContent = formatPeso(precioAdic);
+        document.getElementById('precioProductos').textContent   = formatPeso(precioProd);
+        document.getElementById('totalPagar').textContent        = formatPeso(total);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('input[name="servicio"]').forEach(function(radio) {
+            radio.addEventListener('change', calcularTotal);
+        });
+        document.querySelectorAll('input[name="adicionales"]').forEach(function(chk) {
+            chk.addEventListener('change', calcularTotal);
+        });
+        document.querySelectorAll('input[name="productos"]').forEach(function(chk) {
+            chk.addEventListener('change', calcularTotal);
+        });
+        calcularTotal();
+    });
+</script>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+    <img src="{% static 'logo.jpeg' %}" alt="Logo" style="height:40px; width:40px; object-fit:cover; border-radius:50%; margin-right:8px;">
+    Barber<span>Springfield</span>
+</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="container py-4" id="perfil">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    <li class="nav-item"><a class="nav-link active" href="#perfil">Mi Perfil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#turnos">Mis Turnos</a></li>
+                    <li class="nav-item">
+                        <button class="btn-logout ms-2" data-bs-toggle="modal" data-bs-target="#modalCerrarSesion">
+                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal Cerrar Sesión -->
+    <div class="modal fade" id="modalCerrarSesion" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-warning">
+                <div class="modal-header border-warning">
+                    <h5 class="modal-title text-warning">Cerrar Sesión</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <i class="bi bi-check-circle-fill text-warning fs-1 mb-3 d-inline-block"></i>
+                    <p class="fs-5">¿Estás seguro que deseas cerrar sesión?</p>
+                    <p class="text-light-brown">Serás redirigido al inicio.</p>
+                </div>
+                <div class="modal-footer border-warning">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary-custom"onclick="window.location.href='{% url 'logout' %}'">Cerrar Sesión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4">
+
+        <!-- Perfil del cliente -->
+        <div class="row align-items-center mb-5">
+            <div class="col-md-2 text-center text-md-start">
+                <div class="avatar-circle">
+                    {{ nombre|slice:":2"|upper }}
+                </div>
+            </div>
+            <div class="col-md-7 text-center text-md-start mt-3 mt-md-0">
+                <h1 class="display-6">¡Hola, {{ nombre }}! 👋</h1>
+                <p class="text-light-brown mb-2">
+                    <i class="bi bi-star-fill text-yellow"></i> {{ proximos|length }} próximas citas
+                </p>
+                <div class="d-flex gap-2 justify-content-center justify-content-md-start flex-wrap">
+                    <span class="badge-cliente-premium">⭐ Cliente Premium</span>
+                    <span class="badge-cliente-oferta">🎁 20% off próximo turno</span>
+                </div>
+            </div>
+            <div class="col-md-3 text-center text-md-end mt-3 mt-md-0">
+                <button class="btn btn-primary-custom" id="btnAgendar">
+                    <i class="bi bi-calendar-plus"></i> Agendar cita
+                </button>
+            </div>
+        </div>
+
+        <!-- Tarjetas de estadísticas -->
+        <div class="row g-4 mb-5">
+            <div class="col-6 col-md-4">
+                <div class="stat-card text-center p-3">
+                    <i class="bi bi-scissors fs-1"></i>
+                    <h3 class="mt-2 text-yellow">{{ proximos|length }}</h3>
+                    <p class="text-light-brown mb-0">Citas activas</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="stat-card text-center p-3">
+                    <i class="bi bi-archive fs-1"></i>
+                    <h3 class="mt-2 text-yellow">{{ historial|length }}</h3>
+                    <p class="text-light-brown mb-0">Historial</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="stat-card text-center p-3">
+                    <i class="bi bi-calendar-check fs-1"></i>
+                    <h3 class="mt-2 text-yellow" id="contadorTurnos">{{ proximos|length }}</h3>
+                    <p class="text-light-brown mb-0">Próximas citas</p>
+                </div>
+            </div>
+        </div>
+
+<!-- Formulario nuevo turno -->
+<div id="formularioTurno" class="form-turno mb-5" style="display: none;">
+    <h4 class="text-yellow mb-4"><i class="bi bi-calendar-plus"></i> Nueva cita</h4>
+    <form method="POST" action="{% url 'agendar_cita' %}">
+        {% csrf_token %}
+        <div class="row g-3">
+
+            <!-- Corte base -->
+            <div class="col-md-4">
+    <label class="form-label-custom">✂️ Cortes</label>
+    <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
+        {% for servicio in servicios %}
+        <div class="form-check mb-2">
+            <input class="form-check-input servicio-radio"
+                   type="radio"
+                   name="servicio"
+                   value="{{ servicio.nombre }}"
+                   id="serv{{ servicio.id }}"
+                   data-precio="{{ servicio.precio }}"
+                   {% if forloop.first %}checked{% endif %}>
+            <label class="form-check-label text-light" for="serv{{ servicio.id }}">
+                ✂️ {{ servicio.nombre }}
+                <small class="text-yellow">${{ servicio.precio|floatformat:0 }}</small>
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+            <!-- Adicionales -->
+            <div class="col-md-4">
+                <label class="form-label-custom">➕ Adicionales</label>
+                <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
+                    <div class="form-check mb-2">
+    <input class="form-check-input" type="checkbox" name="adicionales" value="Arreglo de barba" id="chkBarba">
+    <label class="form-check-label text-light" for="chkBarba">
+        ✂️ Arreglo de barba <small class="text-yellow">$5.000</small>
+    </label>
+</div>
+<div class="form-check mb-2">
+    <input class="form-check-input" type="checkbox" name="adicionales" value="Cejas" id="chkCejas">
+    <label class="form-check-label text-light" for="chkCejas">
+        👁️ Cejas <small class="text-yellow">$5.000</small>
+    </label>
+</div>
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" name="adicionales" value="Diseño y líneas" id="chkDiseno">
+    <label class="form-check-label text-light" for="chkDiseno">
+        🎨 Diseño / líneas <small class="text-yellow">$5.000</small>
+    </label>
+</div>
+                </div>
+            </div>
+            <!-- Productos -->
+<div class="col-md-4">
+    <label class="form-label-custom">🧴 Productos</label>
+    <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
+        {% for producto in productos %}
+        <div class="form-check mb-2">
+            <input class="form-check-input producto-check"
+                   type="checkbox"
+                   name="productos"
+                   value="{{ producto.nombre }}"
+                   id="prod{{ producto.id }}"
+                   data-precio="{{ producto.precio }}">
+            <label class="form-check-label text-light" for="prod{{ producto.id }}">
+                🧴 {{ producto.nombre }}
+                <small class="text-yellow">${{ producto.precio|floatformat:0 }}</small>
+            </label>
+        </div>
+        {% empty %}
+        <p class="text-light-brown small">No hay productos disponibles.</p>
+        {% endfor %}
+    </div>
+</div>
+            <!-- Total en tiempo real -->
+<div class="col-12">
+    <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #F4C542;">
+        <div class="d-flex justify-content-between align-items-center">
+            <span class="text-light-brown">Corte:</span>
+            <span class="text-yellow" id="precioBase">$0</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-1">
+            <span class="text-light-brown">Adicionales:</span>
+            <span class="text-yellow" id="precioAdicionales">$0</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-1">
+            <span class="text-light-brown">Productos:</span>
+            <span class="text-yellow" id="precioProductos">$0</span>
+        </div>
+        <hr style="border-color:#3F2E22;">
+        <div class="d-flex justify-content-between align-items-center">
+            <strong class="text-white">Total a pagar:</strong>
+            <strong class="text-yellow fs-5" id="totalPagar">$0</strong>
+        </div>
+    </div>
+</div>
+
+
+            <!-- Fecha -->
+            <div class="col-md-4">
+    <label class="form-label-custom">📅 Fecha <small class="text-light-brown">(DD/MM/AAAA)</small></label>
+    <input type="date" class="form-control bg-dark-input" name="fecha" id="fecha" required>
+</div>
+
+            <!-- Hora -->
+            <div class="col-md-4">
+                <label class="form-label-custom">⏰ Hora</label>
+                <select class="form-select bg-dark-input" name="hora">
+                    <option>10:00 AM</option>
+                    <option>11:30 AM</option>
+                    <option>01:00 PM</option>
+                    <option>02:30 PM</option>
+                    <option>04:00 PM</option>
+                    <option>05:30 PM</option>
+                </select>
+            </div>
+
+            <!-- Barbero -->
+            <div class="col-md-4">
+                <label class="form-label-custom">💈 Barbero</label>
+                <select class="form-select bg-dark-input" name="barbero">
+    {% for barbero in barberos %}
+    <option value="{{ barbero.nombre }}">{{ barbero.nombre }} - {{ barbero.especialidad }}</option>
+    {% endfor %}
+</select>
+            </div>
+
+        </div>
+        <div class="mt-4 d-flex gap-2 justify-content-end">
+            <button type="button" class="btn btn-secondary" id="btnCancelarForm">Cancelar</button>
+            <button type="submit" class="btn btn-primary-custom">Reservar</button>
+        </div>
+    </form>
+</div>
+
+        <!-- Lista de turnos -->
+        <div class="row g-4" id="turnos">
+            <!-- Próximos turnos -->
+            <div class="col-md-6">
+                <div class="stat-card p-0 overflow-hidden">
+                    <div class="card-header-custom">
+                        <i class="bi bi-clock-history"></i> Próximas citas
+                    </div>
+                    <div class="p-3">
+                        {% for cita in proximos %}
+                        <div class="turno-card p-3 mb-2">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap">
+                                <div>
+                                    <strong class="text-yellow">{{ cita.servicio }}</strong><br>
+                                    <small class="text-light-brown">
+    📅 {{ cita.fecha|date:"d/m/Y" }} | ⏰ {{ cita.hora }} | 💈 {{ cita.barbero }}
+</small>
+{% if cita.adicionales and cita.adicionales != 'Ninguno' %}
+<small class="text-yellow d-block mt-1">➕ {{ cita.adicionales }}</small>
+{% endif %}
+                                </div>
+                                <div class="mt-2 mt-sm-0 d-flex align-items-center gap-2">
+                                    {% if cita.estado == "Confirmada" %}
+                                    <span class="badge-confirmado">Confirmada</span> {% elif cita.estado == "Pendiente" %}
+                                    <span class="badge bg-warning text-dark">Pendiente</span> {% endif %}
+                                    <a href="{% url 'cancelar_cita_cliente' cita.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Cancelar este turno?')">
+                                        Cancelar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-light-brown text-center py-3">No tienes turnos próximos.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial -->
+            <div class="col-md-6">
+                <div class="stat-card p-0 overflow-hidden">
+                    <div class="card-header-custom">
+                        <i class="bi bi-archive"></i> Historial
+                    </div>
+                    <div class="p-3">
+                        {% for cita in historial %}
+                        <div class="turno-card p-2 mb-2">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div>
+                                    <strong>{{ cita.servicio }}</strong><br>
+                                    <small class="text-light-brown">{{ cita.fecha }} - {{ cita.hora }}</small>
+                                </div>
+                                <span class="badge-completado">✖ Cancelada</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-light-brown text-center py-3">Sin historial aún.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Servicios rápidos -->
+        <div class="stat-card p-4 mt-4">
+    <h5 class="text-yellow mb-3"><i class="bi bi-tags"></i> Servicios destacados</h5>
+    <div class="row g-3">
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-scissors"></i>
+                <small class="d-block text-light">Tape Fade</small>
+                <small class="text-yellow">$14k</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-wind"></i>
+                <small class="d-block text-light">Mullet</small>
+                <small class="text-yellow">$14k</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-chat-left-text"></i>
+                <small class="d-block text-light">Corte Clásico</small>
+                <small class="text-yellow">$12k</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-fullscreen-exit"></i>
+                <small class="d-block text-light">Buzz Cut</small>
+                <small class="text-yellow">$10k</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-layers"></i>
+                <small class="d-block text-light">Corte Texturizado</small>
+                <small class="text-yellow">$13k</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="servicio-rapido text-center">
+                <i class="bi bi-plus-circle"></i>
+                <small class="d-block text-light">Adicionales</small>
+                <small class="text-yellow">Desde $5k</small>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-4">
+        <div class="container text-center">
+            <p class="text-light-brown mb-0">© 2025 BarberSpringfield | Estilo & Elegancia</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const btnAgendar = document.getElementById('btnAgendar');
+        const formulario = document.getElementById('formularioTurno');
+        const btnCancelar = document.getElementById('btnCancelarForm');
+
+        btnAgendar.addEventListener('click', () => {
+            formulario.style.display = 'block';
+            btnAgendar.style.display = 'none';
+            const fechaInput = document.getElementById('fecha');
+            if (fechaInput) {
+                fechaInput.min = new Date().toISOString().split('T')[0];
+                fechaInput.value = new Date().toISOString().split('T')[0];
+            }
+        });
+
+        btnCancelar.addEventListener('click', () => {
+            formulario.style.display = 'none';
+            btnAgendar.style.display = 'block';
+        });
+    </script>
+</body>
+
+</html>

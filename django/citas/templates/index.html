@@ -1,0 +1,420 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Barbería Corte & Estilo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const sections = document.querySelectorAll("section, footer");
+            const navLinks = document.querySelectorAll(".nav-link");
+
+            function actualizarMenu() {
+                let actual = "";
+                sections.forEach(section => {
+                    const top = section.offsetTop - 150;
+                    const bottom = top + section.offsetHeight;
+                    if (window.scrollY >= top && window.scrollY < bottom) {
+                        actual = section.id;
+                    }
+                });
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 10) {
+                    actual = "contacto";
+                }
+                navLinks.forEach(link => {
+                    link.classList.remove("active");
+                    const href = link.getAttribute("href").replace("#", "");
+                    if (href === actual) {
+                        link.classList.add("active");
+                    }
+                });
+            }
+            window.addEventListener("scroll", actualizarMenu);
+            actualizarMenu();
+        });
+    </script>
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+    <img src="{% static 'logo.jpeg' %}" alt="Logo" style="height:40px; width:40px; object-fit:cover; border-radius:50%; margin-right:8px;">
+    Barber<span>Springfield</span>
+</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#testimonios">Opiniones</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+                    <li class="nav-item">
+                        <a class="btn btn-login-nav ms-2" href="{% url 'login' %}">Iniciar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- HERO -->
+        <section id="inicio" class="hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="badge-custom">✂️ CORTES CON PERSONALIDAD</div>
+                        <h1 class="display-4 fw-bold">
+                            Estilo & <span class="text-yellow">Elegancia</span><br /> Para Caballeros
+                        </h1>
+                        <p class="lead">
+                            Vive la experiencia de una barbería tradicional con técnicas modernas. Atención personalizada, ambiente único y los mejores acabados.
+                        </p>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <a href="{% url 'login' %}" class="btn btn-primary-custom">
+                                Agendar turno
+                            </a>
+                            <button class="btn btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalEstilos">
+                                Ver estilos
+                            </button>
+                        </div>
+
+                        <!-- Modal Estilos -->
+                        <div class="modal fade" id="modalEstilos" tabindex="-1">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content bg-dark text-light border-warning">
+                                    <div class="modal-header border-warning">
+                                        <h3 class="modal-title text-warning">💈 Nuestros Servicios</h3>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5 class="text-warning">Cortes con Personalidad</h5>
+                                        <p>En BarberSpringfield ofrecemos cortes modernos y clásicos adaptados a tu estilo.</p>
+                                        <div class="row mt-4">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <h6 class="text-warning">✂️ Corte Clásico</h6>
+                                                    <p>Un estilo elegante y tradicional para cualquier ocasión.</p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <h6 class="text-warning">👑 Combo Rey</h6>
+                                                    <p>Corte impecable, barba perfectamente perfilada y una cerveza artesanal.</p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <h6 class="text-warning">🎨 Diseño Personalizado</h6>
+                                                    <p>Detalles y líneas exclusivas para destacar tu estilo.</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <h6 class="text-warning">🧔 Perfilado de Barba</h6>
+                                                    <p>Definición profesional para una apariencia impecable.</p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <h6 class="text-warning">💈 Afeitado Tradicional</h6>
+                                                    <p>Experiencia clásica con acabados suaves y precisos.</p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <h6 class="text-warning">✨ Corte + Barba</h6>
+                                                    <p>Servicio completo para renovar completamente tu imagen.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-warning">
+                                        <button class="btn btn-warning" data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 text-center mt-5 mt-lg-0">
+                        <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+                                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+                                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+                            </div>
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?q=80&w=1200&auto=format&fit=crop" class="hero-img w-100 rounded-3" alt="Barbero trabajando" />
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=1200&auto=format&fit=crop" class="hero-img w-100 rounded-3" alt="Corte Fade" />
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="https://images.unsplash.com/photo-1517832606299-7ae9b720a186?q=80&w=1200&auto=format&fit=crop" class="hero-img w-100 rounded-3" alt="Barbería moderna" />
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<!-- SERVICIOS -->
+<section id="servicios" class="servicios py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2>Servicios Populares</h2>
+            <p class="text-light-brown">Cada corte, cada arreglo, hecho con precisión y dedicación</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card-servicio">
+                    <i class="bi bi-scissors"></i>
+                    <h3>Taper Fade</h3>
+                    <p>Degradado limpio desde la sien hasta la nuca. El corte más pedido del momento.</p>
+                    <div class="precio">$14.000</div>
+                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-servicio">
+                    <i class="bi bi-wind"></i>
+                    <h3>Mullet</h3>
+                    <p>Corto por los lados, largo por detrás. Estilo retro moderno con mucha personalidad.</p>
+                    <div class="precio">$14.000</div>
+                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-servicio">
+                    <i class="bi bi-chat-left-text"></i>
+                    <h3>Corte Clásico</h3>
+                    <p>Tú le explicas al barbero lo que quieres. Corte personalizado a tu medida.</p>
+                    <div class="precio">$12.000</div>
+                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-servicio">
+                    <i class="bi bi-fullscreen-exit"></i>
+                    <h3>Buzz Cut</h3>
+                    <p>Muy corto y parejo en toda la cabeza. Fresco, limpio y de bajo mantenimiento.</p>
+                    <div class="precio">$10.000</div>
+                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-servicio">
+                    <i class="bi bi-layers"></i>
+                    <h3>Corte Texturizado</h3>
+                    <p>Con capas y movimiento natural. Ideal para cabello rizado o con volumen.</p>
+                    <div class="precio">$13.000</div>
+                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-servicio">
+                    <i class="bi bi-plus-circle"></i>
+                    <h3>Adicionales</h3>
+                    <p>Arreglo de barba, cejas o diseño con líneas. Se agregan a cualquier corte al reservar.</p>
+                    <div class="precio">Desde $5.000</div>
+                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <!-- BARBEROS -->
+        <section id="barberos" class="barberos py-5">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2>Nuestros Barberos</h2>
+                    <p class="text-light-brown">Profesionales apasionados por su arte</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card-barbero">
+                            <div class="barbero-img-wrapper">
+                                <img src="https://thumbs.dreamstime.com/b/peluquero-con-poses-de-cuchilla-afeitar-en-la-barber%C3%ADa-silla-barbero-una-profesional-es-profesi%C3%B3n-moda-masculino-peluquer%C3%ADa-175803540.jpg" alt="Barbero Carlos" class="barbero-img">
+                            </div>
+                            <div class="barbero-info">
+                                <h3>Carlos Rodríguez</h3>
+                                <p class="especialidad">Especialista en Cortes Clásicos</p>
+                                <div class="calificacion">
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <span>4.8 (156 reseñas)</span>
+                                </div>
+                                <div class="barbero-social">
+                                    <i class="bi bi-instagram"></i>
+                                    <i class="bi bi-facebook"></i>
+                                    <i class="bi bi-whatsapp"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-barbero">
+                            <div class="barbero-img-wrapper">
+                                <img src="https://ebc.edu/wp-content/uploads/2022/03/Barber-posing.jpg" alt="Barbero Miguel" class="barbero-img">
+                            </div>
+                            <div class="barbero-info">
+                                <h3>Miguel Sánchez</h3>
+                                <p class="especialidad">Especialista en Cortes Modernos</p>
+                                <div class="calificacion">
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <span>4.9 (203 reseñas)</span>
+                                </div>
+                                <div class="barbero-social">
+                                    <i class="bi bi-instagram"></i>
+                                    <i class="bi bi-facebook"></i>
+                                    <i class="bi bi-whatsapp"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-barbero">
+                            <div class="barbero-img-wrapper">
+                                <img src="https://img.freepik.com/free-photo/portrait-male-hairstylist-looking-camera_23-2147839829.jpg" alt="Barbero Andrés" class="barbero-img">
+                            </div>
+                            <div class="barbero-info">
+                                <h3>Andrés López</h3>
+                                <p class="especialidad">Especialista en Afeitado</p>
+                                <div class="calificacion">
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                    <span>4.7 (98 reseñas)</span>
+                                </div>
+                                <div class="barbero-social">
+                                    <i class="bi bi-instagram"></i>
+                                    <i class="bi bi-facebook"></i>
+                                    <i class="bi bi-whatsapp"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NOSOTROS -->
+        <section id="nosotros" class="nosotros py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h2>Más que una barbería, <span class="text-yellow">un legado</span></h2>
+                        <p>Desde 2012, BarberSpringfield es el punto de encuentro para los hombres que valoran la estética, la tradición y la buena conversación.</p>
+                        <p>Con un ambiente que fusiona lo vintage con lo moderno, cada visita es una experiencia sensorial.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle-fill text-yellow me-2"></i> Profesionales certificados</li>
+                            <li><i class="bi bi-check-circle-fill text-yellow me-2"></i> Productos premium importados</li>
+                            <li><i class="bi bi-check-circle-fill text-yellow me-2"></i> Higiene y esterilización garantizada</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6 text-center mt-4 mt-lg-0">
+                        <img src="https://www.peluker.com/blog/wp-content/uploads/2024/11/Image04Inspiracion-en-mobiliario-de-barberia-vintage-para-un-look-clasico.jpg" alt="Ambiente barbería" class="img-fluid rounded-3 w-100" style="max-height: 260px; object-fit: cover;" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TESTIMONIOS -->
+        <section id="testimonios" class="testimonios py-5">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2>Lo que dicen nuestros clientes</h2>
+                    <p class="text-light-brown">Más de 500 reseñas nos respaldan</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card-testimonio">
+                            <i class="bi bi-quote"></i>
+                            <div class="estrellas">★★★★★</div>
+                            <p>"Excelente servicio, el barbero entendió exactamente lo que quería."</p>
+                            <h4>— Javier M.</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-testimonio">
+                            <i class="bi bi-quote"></i>
+                            <div class="estrellas">★★★★★</div>
+                            <p>"Llevo años buscando un lugar así. El corte Fade perfecto. 100% recomendado."</p>
+                            <h4>— Andrés L.</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-testimonio">
+                            <i class="bi bi-quote"></i>
+                            <div class="estrellas">★★★★★</div>
+                            <p>"La mejor barbería de la zona. Precios justos y te dan una cerveza mientras esperas."</p>
+                            <h4>— Camila R.</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <div class="cta-section py-5">
+            <div class="container text-center">
+                <h2>¿Listo para un cambio de look?</h2>
+                <p>Reserva tu cita ahora y obtén un 15% de descuento en tu primer corte.</p>
+                <a href="{% url 'panel_cliente' %}" class="btn btn-cta">Reservar mi espacio</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer id="contacto" class="footer py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <h3>BarberSpringfield</h3>
+                    <p>Cortes modernos, atención personalizada y calidad garantizada.</p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h3>Horario</h3>
+                    <p>Lun - Vie: 9:00 AM - 8:00 PM<br/>Sábados: 10:00 AM - 6:00 PM<br/>Domingos: Cerrado</p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h3>Contacto</h3>
+                    <p>
+                        <i class="bi bi-geo-alt"></i> Calle 36B Sur # 5-50<br/>
+                        <i class="bi bi-telephone"></i> +57 301 234 5678<br/>
+                        <i class="bi bi-envelope"></i> barberspringfield@gmail.com
+                    </p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h3>Noticias</h3>
+                    <p>Promociones y tips de cuidado masculino.</p>
+                    <div class="d-flex">
+                        <input type="email" class="form-control" placeholder="Tu correo" />
+                        <button class="btn btn-newsletter">→</button>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright text-center pt-4">
+                <p>© 2025 BarberSpringfield | Estilo & Elegancia - Todos los derechos reservados</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

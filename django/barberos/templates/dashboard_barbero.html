@@ -1,0 +1,286 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Barbero</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const citasLink = document.querySelector('a[href="#citas"]');
+    const citasSection = document.getElementById("citas");
+
+    function actualizarMenu() {
+
+        const rect = citasSection.getBoundingClientRect();
+
+        if (rect.top <= 200 && rect.bottom >= 200) {
+            citasLink.classList.add("active");
+        } else {
+            citasLink.classList.remove("active");
+        }
+    }
+
+    window.addEventListener("scroll", actualizarMenu);
+    actualizarMenu();
+});
+</script>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+
+            <a class="navbar-brand" href="#">
+    <img src="{% static 'logo.jpeg' %}" alt="Logo" style="height:40px; width:40px; object-fit:cover; border-radius:50%; margin-right:8px;">
+    Barber<span>Springfield</span>
+</a>
+
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+                <ul class="navbar-nav ms-auto">
+
+
+
+                    <li class="nav-item">
+    <a class="nav-link" href="#citas">Mis Turnos</a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link perfil-link" href="#perfil">Perfil</a>
+</li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{% url 'logout' %}">
+    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+</a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- HERO -->
+
+    <section id="perfil" class="panel-barbero py-5">
+
+        <div class="container text-center">
+
+            <div class="badge-custom">
+                PANEL DE TRABAJO
+            </div>
+
+            <h1>
+                Bienvenido <span class="text-yellow">Barbero</span>
+            </h1>
+
+            <p>
+                Consulta, confirma y gestiona tus turnos desde un solo lugar.
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- ESTADÍSTICAS -->
+
+    <section id="estadisticas" class="panel-barbero py-5">
+
+        <div class="container">
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+
+                    <div class="card-barbero">
+
+                        <i class="bi bi-calendar-check"></i>
+
+                        <h3>{{ citas|length }}</h3>
+
+                        <p>Turnos Programados</p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <div class="card-barbero">
+
+                        <i class="bi bi-people-fill"></i>
+
+                        <h3>8</h3>
+
+                        <p>Clientes Atendidos</p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <div class="card-barbero">
+
+                        <i class="bi bi-cash-stack"></i>
+
+                        <h3>$180.000</h3>
+
+                        <p>Ingresos del Día</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- TABLA DE CITAS -->
+
+    <section class="py-5" id="citas">
+
+        <div class="container">
+
+            <div class="tabla-citas">
+
+                <h2 class="mb-4">
+                    Próximos Turnos
+                </h2>
+
+                <div class="table-responsive">
+
+                    <table class="table table-dark table-hover">
+
+                        <thead>
+    <tr>
+    <th>Cliente</th>
+    <th>Fecha</th>
+    <th>Hora</th>
+    <th>Servicio</th>
+    <th>Estado</th>
+    <th>Acciones</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for cita in citas %}
+
+<tr>
+
+<td>{{ cita.cliente }}</td>
+<td>{{ cita.fecha|date:"d/m/Y" }}</td>
+<td>{{ cita.hora }}</td>
+<td>{{ cita.servicio }}</td>
+
+    <td>
+
+        {% if cita.estado == "Pendiente" %}
+
+            <span class="badge bg-warning text-dark">
+                Pendiente
+            </span>
+
+        {% elif cita.estado == "Confirmada" %}
+
+            <span class="badge bg-success">
+                Confirmada
+            </span>
+
+        {% else %}
+
+            <span class="badge bg-danger">
+                Cancelada
+            </span>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        {% if cita.estado == "Pendiente" %}
+
+            <a href="{% url 'confirmar_cita' cita.id %}"
+               class="btn btn-sm btn-success">
+                Confirmar
+            </a>
+
+            <a href="{% url 'cancelar_cita' cita.id%}"
+               class="btn btn-sm btn-outline-danger">
+                Cancelar
+            </a>
+
+        {% else %}
+
+            —
+
+        {% endif %}
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+
+    <footer class="footer py-4">
+
+        <div class="container text-center">
+
+            <p>
+                © 2025 BarberSpringfield - Panel del Barbero
+            </p>
+
+        </div>
+
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
