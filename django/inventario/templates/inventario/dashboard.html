@@ -11,362 +11,554 @@
     <link rel="stylesheet" href="{% static 'styles.css' %}">
     <style>
         /* ========== ESTILOS GENERALES ========== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        body {
-            background-color: #0B0A08;
-            color: #F5EFE6;
-            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
-        }
+body {
+    background-color: #0B0A08;
+    color: #F5EFE6;
+    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+}
 
-        /* ========== NAVBAR ========== */
-        .navbar-custom {
-            background-color: #0B0A08;
-            border-bottom: 2px solid #F4C542;
-            padding: 0.8rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1050;
-        }
+/* ========== NAVBAR ========== */
+.navbar-custom {
+    background-color: #0B0A08;
+    border-bottom: 2px solid #F4C542;
+    padding: 0.8rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+}
 
-        .navbar-brand-custom {
-            font-family: 'Playfair Display', 'Georgia', serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #F4C542 !important;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+.navbar-brand-custom {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #F4C542 !important;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-        .navbar-brand-custom span {
-            color: #C9A87C;
-        }
+.navbar-brand-custom span {
+    color: #C9A87C;
+}
 
-        .navbar-brand-custom img {
-            height: 40px;
-            width: 40px;
-            object-fit: cover;
-            border-radius: 50%;
-        }
+.navbar-brand-custom img {
+    height: 40px;
+    width: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+}
 
-        .nav-btn {
-            background: transparent;
-            border: 2px solid #3F2E22;
-            color: #F5EFE6 !important;
-            padding: 0.5rem 1.2rem;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
+.nav-btn {
+    background: transparent;
+    border: 2px solid #3F2E22;
+    color: #F5EFE6 !important;
+    padding: 0.5rem 1.2rem;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
 
-        .nav-btn:hover {
-            background-color: #3F2E22;
-            border-color: #F4C542;
-            transform: scale(1.02);
-        }
+.nav-btn:hover {
+    background-color: #3F2E22;
+    border-color: #F4C542;
+    transform: scale(1.02);
+}
 
-        .nav-btn.active {
-            background-color: #F4C542;
-            border-color: #F4C542;
-            color: #0B0A08 !important;
-            box-shadow: 0 0 20px rgba(244, 197, 66, 0.3);
-        }
+.nav-btn.active {
+    background-color: #F4C542;
+    border-color: #F4C542;
+    color: #0B0A08 !important;
+    box-shadow: 0 0 20px rgba(244, 197, 66, 0.3);
+}
 
-        .btn-logout-custom {
-            background: transparent;
-            border: 2px solid #3F2E22;
-            color: #F5EFE6;
-            padding: 0.5rem 1.2rem;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
+.btn-logout-custom {
+    background: transparent;
+    border: 2px solid #3F2E22;
+    color: #F5EFE6;
+    padding: 0.5rem 1.2rem;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
 
-        .btn-logout-custom:hover {
-            background-color: #dc3545;
-            border-color: #dc3545;
-            color: white;
-        }
+.btn-logout-custom:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
 
-        .user-info-custom {
-            background-color: #2A211B;
-            padding: 0.5rem 1rem;
-            border-radius: 40px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.8rem;
-            color: #F5EFE6;
-        }
+.user-info-custom {
+    background-color: #2A211B;
+    padding: 0.5rem 1rem;
+    border-radius: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: #F5EFE6;
+}
 
-        .user-info-custom i {
-            color: #F4C542;
-            font-size: 1.2rem;
-        }
+.user-info-custom i {
+    color: #F4C542;
+    font-size: 1.2rem;
+}
 
-        /* ========== BARRA DE ACCIONES ========== */
-        .action-bar-sticky {
-            position: sticky;
-            top: 76px;
-            z-index: 1040;
-            background: #0B0A08;
-            padding: 18px 0;
-            border-bottom: 3px solid #F4C542;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
+/* ========== BARRA DE ACCIONES ========== */
+.action-bar-sticky {
+    position: sticky;
+    top: 76px;
+    z-index: 1040;
+    background: #0B0A08;
+    padding: 18px 0;
+    border-bottom: 3px solid #F4C542;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
 
-        .btn-group-modern {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            justify-content: center;
-            align-items: center;
-        }
+.btn-group-modern {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+    align-items: center;
+}
 
-        .btn-modern {
-            background: linear-gradient(135deg, #F4C542 0%, #FFD966 100%);
-            border: none;
-            border-radius: 50px;
-            padding: 14px 28px;
-            color: #0B0A08;
-            font-weight: 700;
-            font-size: 15px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(244, 197, 66, 0.35);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            min-width: 180px;
-            flex: 1 1 auto;
-            letter-spacing: 0.3px;
-            position: relative;
-            overflow: hidden;
-        }
+.btn-modern {
+    background: linear-gradient(135deg, #F4C542 0%, #FFD966 100%);
+    border: none;
+    border-radius: 50px;
+    padding: 14px 28px;
+    color: #0B0A08;
+    font-weight: 700;
+    font-size: 15px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(244, 197, 66, 0.35);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    min-width: 180px;
+    flex: 1 1 auto;
+    letter-spacing: 0.3px;
+    position: relative;
+    overflow: hidden;
+}
 
-        .btn-modern::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s ease;
-        }
+.btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
 
-        .btn-modern:hover::before {
-            left: 100%;
-        }
+.btn-modern:hover::before {
+    left: 100%;
+}
 
-        .btn-modern:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 8px 30px rgba(244, 197, 66, 0.5);
-            background: linear-gradient(135deg, #FFD966 0%, #F4C542 100%);
-        }
+.btn-modern:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(244, 197, 66, 0.5);
+    background: linear-gradient(135deg, #FFD966 0%, #F4C542 100%);
+}
 
-        /* ========== TARJETAS DE ESTADÍSTICAS ========== */
-        .stat-card {
-            background-color: #1E1A15;
-            border-radius: 20px;
-            border-left: 4px solid #F4C542;
-            transition: transform 0.3s, box-shadow 0.3s;
-            height: 100%;
-            padding: 1.5rem;
-            text-align: center;
-        }
+/* ========== TARJETAS DE ESTADÍSTICAS ========== */
+.stat-card {
+    background-color: #1E1A15;
+    border-radius: 20px;
+    border-left: 4px solid #F4C542;
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+    padding: 1.5rem;
+    text-align: center;
+}
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(244, 197, 66, 0.2);
-        }
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(244, 197, 66, 0.2);
+}
 
-        .stat-card i {
-            color: #F4C542;
-            font-size: 2.5rem;
-        }
+.stat-card i {
+    color: #F4C542;
+    font-size: 2.5rem;
+}
 
-        .stat-card h5 {
-            color: #FFD966;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+.stat-card h5 {
+    color: #FFD966;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-        .stat-card h2 {
-            color: #F4C542;
-            font-size: 2.2rem;
-            font-weight: bold;
-        }
+.stat-card h2 {
+    color: #F4C542;
+    font-size: 2.2rem;
+    font-weight: bold;
+}
 
-        /* ========== TABLAS ========== */
-        .card-custom {
-            background-color: #1E1A15;
-            border-radius: 20px;
-            border: 1px solid rgba(244, 197, 66, 0.2);
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
+/* ========== TABLAS - ESTILO OSCURO COMO REPORTES ========== */
+.card-custom {
+    background-color: #1E1A15;
+    border-radius: 20px;
+    border: 1px solid rgba(244, 197, 66, 0.2);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
 
-        .card-header-custom {
-            background-color: #0B0A08;
-            border-bottom: 2px solid #F4C542;
-            padding: 1rem 1.25rem;
-            font-weight: 600;
-            color: #FFD966;
-        }
+.card-header-custom {
+    background-color: #0B0A08;
+    border-bottom: 2px solid #F4C542;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    color: #FFD966;
+}
 
-        .table-custom {
-            background-color: transparent;
-            margin-bottom: 0;
-        }
+.table-custom {
+    background-color: transparent;
+    margin-bottom: 0;
+}
 
-        .table-custom thead th {
-            color: #FFD966;
-            border-bottom: 2px solid #F4C542;
-            font-weight: 600;
-            padding: 0.75rem 1rem;
-        }
+.table-custom thead th {
+    color: #FFD966;
+    border-bottom: 2px solid #F4C542;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    background-color: #0B0A08;
+}
 
-        .table-custom tbody td {
-            color: #F5EFE6;
-            vertical-align: middle;
-            padding: 0.75rem 1rem;
-        }
+.table-custom tbody td {
+    color: #F5EFE6;
+    vertical-align: middle;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(63, 46, 34, 0.3);
+}
 
-        .table-custom tbody tr:hover {
-            background-color: rgba(244, 197, 66, 0.05);
-        }
+.table-custom tbody tr {
+    background-color: #1E1A15;
+    transition: background-color 0.2s ease;
+}
 
-        /* ========== MODALES ========== */
-        .modal-content-custom {
-            background-color: #1E1A15 !important;
-            border: 1px solid rgba(244, 197, 66, 0.3) !important;
-        }
+.table-custom tbody tr:hover {
+    background-color: #2A211B !important;
+}
 
-        .modal-header-custom {
-            border-bottom: 2px solid #F4C542 !important;
-            padding: 1rem 1.5rem;
-        }
+/* ========== BOTONES EN TABLA ========== */
+.table-custom .btn-outline-warning {
+    color: #F4C542;
+    border-color: #F4C542;
+}
 
-        .modal-footer-custom {
-            border-top: 2px solid #F4C542 !important;
-            padding: 1rem 1.5rem;
-        }
+.table-custom .btn-outline-warning:hover {
+    background-color: #F4C542;
+    color: #0B0A08;
+}
 
-        .bg-dark-input {
-            background-color: #2A211B !important;
-            border: 1px solid #3F2E22 !important;
-            color: #F5EFE6 !important;
-        }
+.table-custom .btn-outline-info {
+    color: #0dcaf0;
+    border-color: #0dcaf0;
+}
 
-        .bg-dark-input:focus {
-            background-color: #352b23 !important;
-            border-color: #F4C542 !important;
-            box-shadow: 0 0 0 0.2rem rgba(244, 197, 66, 0.25);
-        }
+.table-custom .btn-outline-info:hover {
+    background-color: #0dcaf0;
+    color: #0B0A08;
+}
 
-        .form-label-custom {
-            color: #FFD966;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
+.table-custom .btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
 
-        /* ========== BADGES ========== */
-        .badge-stock-bajo {
-            background-color: #dc3545;
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-        }
+.table-custom .btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
 
-        .badge-stock-medio {
-            background-color: #ffc107;
-            color: #0B0A08;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-        }
+.table-custom .btn-group .btn {
+    transition: all 0.2s ease;
+}
 
-        .badge-stock-bueno {
-            background-color: #198754;
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-        }
+.table-custom .btn-group .btn:hover {
+    transform: scale(1.1);
+}
 
-        /* ========== UTILIDADES ========== */
-        .text-yellow {
-            color: #F4C542 !important;
-        }
-        .text-light-brown {
-            color: #C9A87C !important;
-        }
+/* ========== BADGES ========== */
+.badge-stock-bajo {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
 
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 768px) {
-            .navbar-brand-custom {
-                font-size: 1.3rem;
-            }
-            .nav-btn, .btn-logout-custom {
-                font-size: 0.8rem;
-                padding: 0.3rem 0.8rem;
-            }
-            .action-bar-sticky {
-                top: 70px;
-                padding: 12px 0;
-            }
-            .btn-modern {
-                font-size: 13px;
-                padding: 11px 18px;
-                min-width: 140px;
-            }
-            .stat-card h2 {
-                font-size: 1.8rem;
-            }
-        }
+.badge-stock-medio {
+    background-color: #ffc107;
+    color: #0B0A08;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
 
-        @media (max-width: 576px) {
-            .btn-group-modern {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-            .btn-modern {
-                font-size: 14px;
-                padding: 13px 20px;
-                min-width: unset;
-                width: 100%;
-            }
-            .stat-card {
-                padding: 1rem;
-            }
-            .stat-card h2 {
-                font-size: 1.5rem;
-            }
-        }
+.badge-stock-bueno {
+    background-color: #198754;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+/* ========== BADGES MOVIMIENTOS ========== */
+.badge.bg-success {
+    background-color: #198754 !important;
+    color: white !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #0B0A08 !important;
+}
+
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: #0B0A08 !important;
+}
+
+/* ========== MODALES ========== */
+.modal-content-custom {
+    background-color: #1E1A15 !important;
+    border: 1px solid rgba(244, 197, 66, 0.3) !important;
+}
+
+.modal-header-custom {
+    border-bottom: 2px solid #F4C542 !important;
+    padding: 1rem 1.5rem;
+}
+
+.modal-footer-custom {
+    border-top: 2px solid #F4C542 !important;
+    padding: 1rem 1.5rem;
+}
+
+.bg-dark-input {
+    background-color: #2A211B !important;
+    border: 1px solid #3F2E22 !important;
+    color: #F5EFE6 !important;
+}
+
+.bg-dark-input:focus {
+    background-color: #352b23 !important;
+    border-color: #F4C542 !important;
+    box-shadow: 0 0 0 0.2rem rgba(244, 197, 66, 0.25);
+}
+
+.form-label-custom {
+    color: #FFD966;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* ========== UTILIDADES ========== */
+.text-yellow {
+    color: #F4C542 !important;
+}
+.text-light-brown {
+    color: #C9A87C !important;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .navbar-brand-custom {
+        font-size: 1.3rem;
+    }
+    .nav-btn, .btn-logout-custom {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.8rem;
+    }
+    .action-bar-sticky {
+        top: 70px;
+        padding: 12px 0;
+    }
+    .btn-modern {
+        font-size: 13px;
+        padding: 11px 18px;
+        min-width: 140px;
+    }
+    .stat-card h2 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-group-modern {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .btn-modern {
+        font-size: 14px;
+        padding: 13px 20px;
+        min-width: unset;
+        width: 100%;
+    }
+    .stat-card {
+        padding: 1rem;
+    }
+    .stat-card h2 {
+        font-size: 1.5rem;
+    }
+}
+/* ========== TABLAS - ESTILO OSCURO COMO REPORTES ========== */
+.card-custom {
+    background-color: #1E1A15 !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(244, 197, 66, 0.2) !important;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.card-header-custom {
+    background-color: #0B0A08 !important;
+    border-bottom: 2px solid #F4C542 !important;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    color: #FFD966 !important;
+}
+
+.table-custom {
+    background-color: #1E1A15 !important;
+    margin-bottom: 0;
+}
+
+.table-custom thead th {
+    color: #FFD966 !important;
+    border-bottom: 2px solid #F4C542 !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 1rem;
+    background-color: #0B0A08 !important;
+}
+
+.table-custom tbody td {
+    color: #F5EFE6 !important;
+    vertical-align: middle;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(63, 46, 34, 0.3) !important;
+    background-color: #1E1A15 !important;
+}
+
+.table-custom tbody tr {
+    background-color: #1E1A15 !important;
+    transition: background-color 0.2s ease;
+}
+
+.table-custom tbody tr:hover td {
+    background-color: #2A211B !important;
+}
+
+.table-custom tbody tr:hover {
+    background-color: #2A211B !important;
+}
+
+/* ========== BOTONES EN TABLA ========== */
+.table-custom .btn-outline-warning {
+    color: #F4C542 !important;
+    border-color: #F4C542 !important;
+}
+
+.table-custom .btn-outline-warning:hover {
+    background-color: #F4C542 !important;
+    color: #0B0A08 !important;
+}
+
+.table-custom .btn-outline-info {
+    color: #0dcaf0 !important;
+    border-color: #0dcaf0 !important;
+}
+
+.table-custom .btn-outline-info:hover {
+    background-color: #0dcaf0 !important;
+    color: #0B0A08 !important;
+}
+
+.table-custom .btn-outline-danger {
+    color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.table-custom .btn-outline-danger:hover {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+.table-custom .btn-group .btn {
+    transition: all 0.2s ease;
+}
+
+.table-custom .btn-group .btn:hover {
+    transform: scale(1.1);
+}
+
+/* ========== BADGES ========== */
+.badge-stock-bajo {
+    background-color: #dc3545 !important;
+    color: white !important;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+.badge-stock-medio {
+    background-color: #ffc107 !important;
+    color: #0B0A08 !important;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+.badge-stock-bueno {
+    background-color: #198754 !important;
+    color: white !important;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+/* ========== BADGES MOVIMIENTOS ========== */
+.badge.bg-success {
+    background-color: #198754 !important;
+    color: white !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #0B0A08 !important;
+}
+
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: #0B0A08 !important;
+}
     </style>
 </head>
 
@@ -384,7 +576,6 @@
                         <i class="bi bi-person-circle"></i>
                         <span>{{ user.username }}</span>
                     </div>
-                    <!-- 🔥 CORREGIDO: Panel Admin con namespace -->
                     <a href="{% url 'administracion:panel_admin' %}" class="nav-btn">
                         <i class="bi bi-speedometer2"></i> Panel Admin
                     </a>
@@ -433,16 +624,8 @@
                 <h1 class="text-yellow" style="font-family:'Playfair Display',serif;">
                     <i class="bi bi-boxes"></i> Inventario
                 </h1>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <!-- 🔥 CORREGIDO: Panel Admin con namespace -->
-                        <li class="breadcrumb-item"><a href="{% url 'administracion:panel_admin' %}" class="text-light-brown">Panel Admin</a></li>
-                        <li class="breadcrumb-item active text-yellow" aria-current="page">Inventario</li>
-                    </ol>
-                </nav>
             </div>
             <div>
-                <!-- 🔥 CORREGIDO: Panel Admin con namespace -->
                 <a href="{% url 'administracion:panel_admin' %}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Volver al Panel
                 </a>
@@ -467,6 +650,10 @@
                         <i class="bi bi-box-seam"></i>
                         <span>Agregar Producto</span>
                     </button>
+                    <a href="{% url 'inventario:historial' %}" class="btn-modern">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Ver Historial</span>
+                    </a>
                     <a href="#reportes" class="btn-modern">
                         <i class="bi bi-file-earmark-bar-graph"></i>
                         <span>Reportes</span>
@@ -561,15 +748,28 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{% url 'inventario:movimiento' producto.id %}" class="btn btn-outline-warning" title="Registrar movimiento">
+                                        <button type="button" 
+                                            class="btn btn-outline-warning" 
+                                            title="Registrar movimiento"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#modalMovimiento"
+                                            data-id="{{ producto.id }}"
+                                            data-nombre="{{ producto.nombre }}"
+                                            data-stock="{{ producto.stock_actual }}">
                                             <i class="bi bi-arrow-left-right"></i>
-                                        </a>
+                                        </button>
                                         <a href="{% url 'inventario:editar' producto.id %}" class="btn btn-outline-info" title="Editar">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="{% url 'inventario:eliminar' producto.id %}" class="btn btn-outline-danger" title="Eliminar" onclick="return confirm('¿Eliminar este producto?')">
+                                        <button type="button"
+                                            class="btn btn-outline-danger"
+                                            title="Eliminar"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEliminarProducto"
+                                            data-id="{{ producto.id }}"
+                                            data-nombre="{{ producto.nombre }}">
                                             <i class="bi bi-trash"></i>
-                                        </a>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -603,6 +803,7 @@
                                 <th>Producto</th>
                                 <th>Tipo</th>
                                 <th>Cantidad</th>
+                                <th>Proveedor</th>
                                 <th>Usuario</th>
                                 <th>Fecha</th>
                             </tr>
@@ -612,12 +813,13 @@
                             <tr>
                                 <td>{{ mov.producto.nombre }}</td>
                                 <td>
-                                    <span class="badge {% if mov.tipo == 'ENTRADA' %}bg-success{% else %}bg-warning text-dark{% endif %}">
-                                        <i class="bi {% if mov.tipo == 'ENTRADA' %}bi-arrow-down{% else %}bi-arrow-up{% endif %}"></i>
+                                    <span class="badge {% if mov.tipo == 'ENTRADA' %}bg-success{% elif mov.tipo == 'SALIDA' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}">
+                                        <i class="bi {% if mov.tipo == 'ENTRADA' %}bi-arrow-down{% elif mov.tipo == 'SALIDA' %}bi-arrow-up{% else %}bi-pencil{% endif %}"></i>
                                         {{ mov.get_tipo_display }}
                                     </span>
                                 </td>
                                 <td>{{ mov.cantidad }}</td>
+                                <td>{{ mov.proveedor|default:"-" }}</td>
                                 <td>{{ mov.usuario.username|default:"Sistema" }}</td>
                                 <td>{{ mov.fecha|date:"d/m/Y H:i" }}</td>
                             </tr>
@@ -785,20 +987,35 @@
                             <br>
                             Stock actual: <strong class="text-white" id="movimientoStockActual"></strong>
                         </div>
+                        
                         <div class="mb-3">
                             <label class="form-label-custom">Tipo de movimiento *</label>
                             <select name="tipo" id="movimientoTipo" class="form-select bg-dark-input" required>
                                 <option value="ENTRADA">📥 Entrada (Agregar stock)</option>
                                 <option value="SALIDA">📤 Salida (Quitar stock)</option>
+                                <option value="AJUSTE">⚙️ Ajuste (Corregir stock)</option>
                             </select>
                         </div>
+                        
                         <div class="mb-3">
                             <label class="form-label-custom">Cantidad *</label>
                             <input type="number" name="cantidad" id="movimientoCantidad" class="form-control bg-dark-input" required min="1">
+                            <small class="text-light-brown" id="movimientoAyudaCantidad">Ingresa la cantidad para entrada/salida o el nuevo stock para ajuste</small>
                         </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label-custom">Proveedor</label>
+                            <input type="text" name="proveedor" id="movimientoProveedor" class="form-control bg-dark-input" placeholder="Nombre del proveedor (opcional)">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label-custom">Fecha del movimiento</label>
+                            <input type="datetime-local" name="fecha" id="movimientoFecha" class="form-control bg-dark-input">
+                        </div>
+                        
                         <div class="mb-3">
                             <label class="form-label-custom">Nota (opcional)</label>
-                            <textarea name="nota" id="movimientoNota" class="form-control bg-dark-input" rows="2"></textarea>
+                            <textarea name="nota" id="movimientoNota" class="form-control bg-dark-input" rows="2" placeholder="Observaciones del movimiento"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer modal-footer-custom">
@@ -859,7 +1076,27 @@
             document.getElementById('formMovimiento').action = `/inventario/movimiento/${btn.dataset.id}/`;
             document.getElementById('movimientoTipo').value = 'ENTRADA';
             document.getElementById('movimientoCantidad').value = '';
+            document.getElementById('movimientoProveedor').value = '';
             document.getElementById('movimientoNota').value = '';
+            
+            // Establecer fecha actual
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('movimientoFecha').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        });
+
+        // Cambiar texto de ayuda según tipo de movimiento
+        document.getElementById('movimientoTipo').addEventListener('change', function() {
+            const ayuda = document.getElementById('movimientoAyudaCantidad');
+            if (this.value === 'AJUSTE') {
+                ayuda.textContent = 'Ingresa el NUEVO stock que deseas establecer';
+            } else {
+                ayuda.textContent = 'Ingresa la cantidad para entrada/salida';
+            }
         });
 
         // ===== MODAL ELIMINAR PRODUCTO =====

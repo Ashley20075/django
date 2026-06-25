@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import models
 from django.db.models import Sum
+from django.utils import timezone
 from .models import Producto, MovimientoInventario
 from .forms import ProductoForm, MovimientoForm
 
@@ -12,7 +13,7 @@ def dashboard_inventario(request):
     productos = Producto.objects.filter(activo=True).order_by('nombre')
     total_productos = productos.count()
     productos_bajo_stock = productos.filter(stock_actual__lte=models.F('stock_minimo')).count()
-    ultimos_movimientos = MovimientoInventario.objects.select_related('producto', 'usuario').order_by('-fecha')[:10]
+    ultimos_movimientos = MovimientoInventario.objects.select_related('producto', 'usuario').order_by('-fecha')[:20]  # <-- Más movimientos
     stock_total = productos.aggregate(total=Sum('stock_actual'))['total'] or 0
     
     context = {
@@ -60,22 +61,38 @@ def movimiento_inventario(request, producto_id):
             movimiento.producto = producto
             movimiento.usuario = request.user
             
+            # Si no se proporcionó fecha, usar la actual
+            if not movimiento.fecha:
+                movimiento.fecha = timezone.now()
+            
+            # Guardar stock anterior
+            movimiento.stock_anterior = producto.stock_actual
+            
+            # Procesar según tipo
             if movimiento.tipo == 'ENTRADA':
                 producto.stock_actual += movimiento.cantidad
+                movimiento.stock_nuevo = producto.stock_actual
                 messages.success(request, f'✅ Entrada registrada. Nuevo stock: {producto.stock_actual}')
-            else:
+                
+            elif movimiento.tipo == 'SALIDA':
                 if producto.stock_actual >= movimiento.cantidad:
                     producto.stock_actual -= movimiento.cantidad
+                    movimiento.stock_nuevo = producto.stock_actual
                     messages.success(request, f'✅ Salida registrada. Nuevo stock: {producto.stock_actual}')
                 else:
                     messages.error(request, f'❌ Stock insuficiente. Stock actual: {producto.stock_actual}')
                     return redirect('inventario:dashboard')
+                    
+            elif movimiento.tipo == 'AJUSTE':  # <-- NUEVO TIPO
+                movimiento.stock_nuevo = movimiento.cantidad
+                producto.stock_actual = movimiento.cantidad
+                messages.success(request, f'✅ Ajuste realizado. Nuevo stock: {producto.stock_actual}')
             
             producto.save()
             movimiento.save()
             return redirect('inventario:dashboard')
     else:
-        form = MovimientoForm()
+        form = MovimientoForm(initial={'fecha': timezone.now()})  # <-- Fecha por defecto
     
     return render(request, 'inventario/movimiento_form.html', {
         'form': form,
@@ -91,3 +108,32 @@ def eliminar_producto(request, producto_id):
         messages.success(request, f'✅ Producto "{nombre}" eliminado correctamente.')
         return redirect('inventario:dashboard')
     return render(request, 'inventario/eliminar_confirm.html', {'producto': producto})
+
+# ========== NUEVA VISTA: HISTORIAL COMPLETO ==========
+@login_required
+def historial_movimientos(request):
+    movimientos = MovimientoInventario.objects.select_related('producto', 'usuario').order_by('-fecha')
+    
+    # Filtros
+    tipo = request.GET.get('tipo')
+    producto_id = request.GET.get('producto')
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+    
+    if tipo:
+        movimientos = movimientos.filter(tipo=tipo)
+    if producto_id:
+        movimientos = movimientos.filter(producto_id=producto_id)
+    if fecha_inicio:
+        movimientos = movimientos.filter(fecha__date__gte=fecha_inicio)
+    if fecha_fin:
+        movimientos = movimientos.filter(fecha__date__lte=fecha_fin)
+    
+    productos = Producto.objects.filter(activo=True)
+    
+    context = {
+        'movimientos': movimientos,
+        'productos': productos,
+        'tipos': MovimientoInventario.TIPO_MOVIMIENTO,
+    }
+    return render(request, 'inventario/historial_movimientos.html', context)

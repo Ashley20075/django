@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout
 from django.contrib import messages
 from django.contrib.auth.models import User
-from citas.models import Cita, Barbero, Servicio
+from citas.models import Cita, Servicio
+from barberos.models import Barbero
 from inventario.models import Producto
-from django.contrib.auth.models import User, Group
 
 # ============================================
 # VISTAS DEL PANEL DEL CLIENTE
@@ -16,7 +16,7 @@ def panel_cliente(request):
     nombre_cliente = request.user.first_name
     proximos = Cita.objects.filter(cliente=nombre_cliente).exclude(estado="Cancelada")
     historial = Cita.objects.filter(cliente=nombre_cliente, estado="Cancelada")
-    barberos = Barbero.objects.all()
+    barberos = Barbero.objects.filter(activo=True)
     servicios = Servicio.objects.all()
     productos = Producto.objects.all()
     
@@ -38,6 +38,17 @@ def agendar_cita(request):
         adicionales_str = ', '.join(adicionales) if adicionales else 'Ninguno'
         productos_str = ', '.join(prods_seleccionados) if prods_seleccionados else 'Ninguno'
 
+        # Obtener el nombre del barbero seleccionado
+        barbero_nombre = request.POST.get('barbero')
+        
+        # Verificar que el barbero existe y está activo
+        try:
+            barbero = Barbero.objects.get(nombre=barbero_nombre, activo=True)
+        except Barbero.DoesNotExist:
+            messages.error(request, '❌ El barbero seleccionado no está disponible')
+            return redirect('panel_cliente')
+
+        # Crear la cita con el nombre del barbero
         Cita.objects.create(
             cliente=request.user.first_name,
             servicio=request.POST.get('servicio'),
@@ -45,20 +56,21 @@ def agendar_cita(request):
             productos=productos_str,
             fecha=request.POST.get('fecha'),
             hora=request.POST.get('hora'),
-            barbero=request.POST.get('barbero'),
+            barbero=barbero.nombre,  # <-- Guarda el nombre del barbero
             estado="Pendiente",
         )
 
-        # DESCONTAR INVENTARIO
+        # Descontar inventario
         for nombre_producto in prods_seleccionados:
             try:
                 producto = Producto.objects.get(nombre=nombre_producto)
-                if producto.stock > 0:
-                    producto.stock -= 1
+                if producto.stock_actual > 0:
+                    producto.stock_actual -= 1
                     producto.save()
             except Producto.DoesNotExist:
                 pass
 
+        messages.success(request, f'✅ Cita agendada con {barbero.nombre}')
         return redirect('panel_cliente')
 
     return redirect('panel_cliente')
@@ -67,7 +79,6 @@ def agendar_cita(request):
 def cancelar_cita_cliente(request, id):
     cita = Cita.objects.get(id=id)
 
-    # Evitar devolver inventario dos veces
     if cita.estado != "Cancelada":
         if cita.productos and cita.productos != "Ninguno":
             productos = cita.productos.split(',')
@@ -75,18 +86,19 @@ def cancelar_cita_cliente(request, id):
                 nombre_producto = nombre_producto.strip()
                 try:
                     producto = Producto.objects.get(nombre=nombre_producto)
-                    producto.stock += 1
+                    producto.stock_actual += 1
                     producto.save()
                 except Producto.DoesNotExist:
                     pass
 
         cita.estado = "Cancelada"
         cita.save()
+        messages.success(request, '✅ Cita cancelada exitosamente')
 
     return redirect('panel_cliente')
 
 # ============================================
-# VISTAS DE AUTENTICACIÓN (REGISTRO Y LOGIN)
+# REGISTRO DE CLIENTES
 # ============================================
 
 def registro(request):
@@ -97,18 +109,15 @@ def registro(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
         
-        # Validar que las contraseñas coincidan
         if password != confirm_password:
             messages.error(request, 'Las contraseñas no coinciden')
             return render(request, 'registro.html')
         
-        # Validar que el email no exista
         if User.objects.filter(email=email).exists():
             messages.error(request, 'Este correo electrónico ya está registrado')
             return render(request, 'registro.html')
         
         try:
-            # Crear el usuario
             user = User.objects.create_user(
                 username=email,  # Usamos email como username
                 email=email,
@@ -116,48 +125,16 @@ def registro(request):
                 first_name=nombre,
                 last_name=apellido
             )
-            
             messages.success(request, '¡Cuenta creada exitosamente! Ahora inicia sesión.')
             return redirect('login')
-            
         except Exception as e:
             messages.error(request, f'Error al crear usuario: {str(e)}')
             return render(request, 'registro.html')
     
     return render(request, 'registro.html')
 
-def login_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        try:
-            usuario = User.objects.get(email=email)
-            username = usuario.username
-        except User.DoesNotExist:
-            username = None
-
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
-
-        if user is not None:
-            login(request, user)
-
-        if user.is_superuser:
-            return redirect('administracion:panel_admin')
-
-        if user.groups.filter(name='Barberos').exists():
-            return redirect('panel_barbero')
-
-        return redirect('panel_cliente')
-
-        messages.error(request, 'Credenciales inválidas')
-
-    return render(request, 'login.html')
 
 def logout_view(request):
     logout(request)
-    return redirect('inicio')
+    messages.info(request, 'Sesión cerrada exitosamente')
+    return redirect('login')

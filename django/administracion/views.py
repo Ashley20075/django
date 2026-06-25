@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from citas.models import Cita, Servicio
-from usuarios.models import Perfil
 
 try:
     from barberos.models import Barbero
@@ -37,7 +36,6 @@ def panel_admin(request):
     ).count()
 
     barberos = Barbero.objects.all()
-
     servicios = Servicio.objects.all()
     productos = Producto.objects.all()
 
@@ -60,35 +58,34 @@ def panel_admin(request):
 def asignar_barbero(request, id):
     user = get_object_or_404(User, id=id)
 
+    # Verificar si el usuario ya es barbero
+    if Barbero.objects.filter(email=user.email).exists():
+        messages.warning(request, f'⚠️ El usuario "{user.username}" ya es barbero.')
+        return redirect('administracion:panel_admin')
+
+    # Agregar al grupo Barberos
     group, created = Group.objects.get_or_create(name='Barberos')
     user.groups.add(group)
 
-    if not Barbero.objects.filter(email=user.email).exists():
+    # Crear el barbero con cédula única
+    nombre_completo = f"{user.first_name} {user.last_name}".strip()
+    nombre_final = nombre_completo if nombre_completo else user.username
 
-        nombre_completo = f"{user.first_name} {user.last_name}".strip()
+    # Generar una cédula única basada en el ID del usuario
+    cedula_unica = f"USR{user.id:06d}"  # Ejemplo: USR000006
 
-        try:
-            perfil = Perfil.objects.get(usuario=user)
-
-            cedula = perfil.cedula
-            telefono = perfil.telefono
-
-        except Perfil.DoesNotExist:
-
-            cedula = "Sin registrar"
-            telefono = "Sin registrar"
-
-        Barbero.objects.create(
-            nombre=nombre_completo if nombre_completo else user.username,
-            cedula=cedula,
-            especialidad="General",
-            telefono=telefono,
-            email=user.email
-        )
+    Barbero.objects.create(
+        nombre=nombre_final,
+        cedula=cedula_unica,  # <-- Cédula única generada
+        especialidad="General",
+        telefono="Sin registrar",
+        email=user.email,
+        activo=True
+    )
 
     messages.success(
         request,
-        f'✅ Usuario "{user.username}" ahora es barbero.'
+        f'✅ Usuario "{user.username}" ahora es barbero con cédula {cedula_unica}.'
     )
 
     return redirect('administracion:panel_admin')
@@ -108,6 +105,7 @@ def quitar_barbero(request, id):
     )
 
     return redirect('administracion:panel_admin')
+
 
 @login_required
 def editar_cita(request, id):
@@ -135,17 +133,119 @@ def eliminar_cita(request, id):
 def agregar_barbero(request):
     if request.method == 'POST':
         try:
+            cedula = request.POST.get('cedula')
+            
+            # Verificar si la cédula ya existe
+            if Barbero.objects.filter(cedula=cedula).exists():
+                messages.error(request, f'❌ La cédula "{cedula}" ya está registrada.')
+                return redirect('administracion:panel_admin')
+            
             barbero = Barbero.objects.create(
                 nombre=request.POST.get('nombre'),
-                cedula=request.POST.get('cedula'),
+                cedula=cedula,
                 especialidad=request.POST.get('especialidad'),
                 telefono=request.POST.get('telefono'),
-                email=request.POST.get('email')
+                email=request.POST.get('email'),
+                activo=True
             )
             messages.success(request, f'✅ Barbero "{barbero.nombre}" agregado correctamente.')
         except Exception as e:
             messages.error(request, f'❌ Error: {str(e)}')
         return redirect('administracion:panel_admin')
+    return redirect('administracion:panel_admin')
+
+@login_required
+def crear_usuario(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        
+        # Verificar si el usuario ya existe
+        if User.objects.filter(username=username).exists():
+            messages.error(request, '❌ El nombre de usuario ya existe.')
+            return redirect('administracion:panel_admin')
+        
+        if User.objects.filter(email=email).exists():
+            messages.error(request, '❌ El email ya está registrado.')
+            return redirect('administracion:panel_admin')
+        
+        # Crear usuario
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name
+        )
+        
+        messages.success(request, f'✅ Usuario "{username}" creado exitosamente.')
+        return redirect('administracion:panel_admin')
+    
+    return redirect('administracion:panel_admin')
+
+def crear_usuario(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+        cedula = request.POST.get('cedula')
+        telefono = request.POST.get('telefono')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        # Validar que las contraseñas coincidan
+        if password != confirm_password:
+            messages.error(request, '❌ Las contraseñas no coinciden')
+            return redirect('administracion:panel_admin')
+        
+        # Validar que el email no exista
+        if User.objects.filter(email=email).exists():
+            messages.error(request, '❌ Este correo electrónico ya está registrado')
+            return redirect('administracion:panel_admin')
+        
+        # Validar que el usuario no exista
+        if User.objects.filter(username=email).exists():
+            messages.error(request, '❌ Este nombre de usuario ya existe')
+            return redirect('administracion:panel_admin')
+        
+        # Validar que la cédula no exista (si se proporcionó)
+        if cedula and Barbero.objects.filter(cedula=cedula).exists():
+            messages.error(request, '❌ Esta cédula ya está registrada')
+            return redirect('administracion:panel_admin')
+        
+        try:
+            # Crear el usuario (usando email como username)
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=password,
+                first_name=nombre,
+                last_name=apellido
+            )
+            
+            # Crear el cliente asociado (si existe el modelo Cliente)
+            try:
+                from clientes.models import Cliente
+                Cliente.objects.create(
+                    user=user,
+                    nombre=f"{nombre} {apellido}",
+                    cedula=cedula if cedula else "Sin registrar",
+                    telefono=telefono if telefono else "Sin registrar",
+                    email=email
+                )
+            except:
+                pass
+            
+            
+            messages.success(request, f'✅ Usuario "{nombre} {apellido}" creado exitosamente.')
+        except Exception as e:
+            messages.error(request, f'❌ Error al crear usuario: {str(e)}')
+        
+        return redirect('administracion:panel_admin')
+    
     return redirect('administracion:panel_admin')
 
 @login_required

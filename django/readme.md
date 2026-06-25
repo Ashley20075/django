@@ -8,7 +8,7 @@ samuel@gmail.com
 1234
 
 crea un entorno virtual
-py -m venv venv
+python -m venv venv
 
 Activar entorno virtual
 venv\Scripts\activate

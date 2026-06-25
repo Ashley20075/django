@@ -232,28 +232,7 @@
 </div>
                 </div>
             </div>
-            <!-- Productos -->
-<div class="col-md-4">
-    <label class="form-label-custom">🧴 Productos</label>
-    <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
-        {% for producto in productos %}
-        <div class="form-check mb-2">
-            <input class="form-check-input producto-check"
-                   type="checkbox"
-                   name="productos"
-                   value="{{ producto.nombre }}"
-                   id="prod{{ producto.id }}"
-                   data-precio="{{ producto.precio }}">
-            <label class="form-check-label text-light" for="prod{{ producto.id }}">
-                🧴 {{ producto.nombre }}
-                <small class="text-yellow">${{ producto.precio|floatformat:0 }}</small>
-            </label>
-        </div>
-        {% empty %}
-        <p class="text-light-brown small">No hay productos disponibles.</p>
-        {% endfor %}
-    </div>
-</div>
+
             <!-- Total en tiempo real -->
 <div class="col-12">
     <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #F4C542;">

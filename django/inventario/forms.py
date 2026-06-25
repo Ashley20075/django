@@ -6,8 +6,8 @@ class ProductoForm(forms.ModelForm):
         model = Producto
         fields = ['nombre', 'descripcion', 'stock_actual', 'stock_minimo', 'precio_unitario']
         widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control bg-dark-input', 'placeholder': 'Nombre del producto'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control bg-dark-input', 'rows': 3, 'placeholder': 'Descripción opcional'}),
+            'descripcion': forms.Textarea(attrs={'rows': 3, 'class': 'form-control bg-dark-input'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control bg-dark-input'}),
             'stock_actual': forms.NumberInput(attrs={'class': 'form-control bg-dark-input'}),
             'stock_minimo': forms.NumberInput(attrs={'class': 'form-control bg-dark-input'}),
             'precio_unitario': forms.NumberInput(attrs={'class': 'form-control bg-dark-input', 'step': '0.01'}),
@@ -16,9 +16,11 @@ class ProductoForm(forms.ModelForm):
 class MovimientoForm(forms.ModelForm):
     class Meta:
         model = MovimientoInventario
-        fields = ['tipo', 'cantidad', 'nota']
+        fields = ['tipo', 'cantidad', 'proveedor', 'fecha', 'nota']  # <-- Agregar proveedor y fecha
         widgets = {
-            'tipo': forms.Select(attrs={'class': 'form-control bg-dark-input'}),
+            'tipo': forms.Select(attrs={'class': 'form-select bg-dark-input'}),
             'cantidad': forms.NumberInput(attrs={'class': 'form-control bg-dark-input', 'min': 1}),
-            'nota': forms.Textarea(attrs={'class': 'form-control bg-dark-input', 'rows': 2, 'placeholder': 'Observaciones (opcional)'}),
+            'proveedor': forms.TextInput(attrs={'class': 'form-control bg-dark-input', 'placeholder': 'Nombre del proveedor'}),
+            'fecha': forms.DateTimeInput(attrs={'class': 'form-control bg-dark-input', 'type': 'datetime-local'}),
+            'nota': forms.Textarea(attrs={'class': 'form-control bg-dark-input', 'rows': 2, 'placeholder': 'Observaciones del movimiento'}),
         }

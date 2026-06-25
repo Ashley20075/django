@@ -345,19 +345,19 @@
         }
 
         .card-custom {
-            background-color: #1E1A15;
-            border-radius: 20px;
-            border: 1px solid rgba(244, 197, 66, 0.2);
+            background-color: #1E1A15 !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(244, 197, 66, 0.2) !important;
             margin-bottom: 2rem;
             overflow: hidden;
         }
 
         .card-header-custom {
-            background-color: #0B0A08;
-            border-bottom: 2px solid #F4C542;
+            background-color: #0B0A08 !important;
+            border-bottom: 2px solid #F4C542 !important;
             padding: 1rem 1.25rem;
             font-weight: 600;
-            color: #FFD966;
+            color: #FFD966 !important;
         }
 
         .table-custom {
@@ -378,7 +378,7 @@
             color: #F5EFE6 !important;
             vertical-align: middle;
             padding: 0.75rem 1rem;
-            border-bottom: 1px solid #2A211B;
+            border-bottom: 1px solid rgba(63, 46, 34, 0.3) !important;
         }
 
         .table-custom tbody tr:hover td {
@@ -547,15 +547,12 @@
         <div class="action-bar-sticky">
             <div class="container">
                 <div class="btn-group-modern">
-                    <button class="btn-modern" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto">
-                        <i class="bi bi-box-seam"></i> Nuevo Producto
-                    </button>
                     <button class="btn-modern" data-bs-toggle="modal" data-bs-target="#modalAgregarServicio">
                         <i class="bi bi-plus-circle"></i> Nuevo Servicio
                     </button>
-                    <a href="{% url 'registro' %}" class="btn-modern">
+                    <button class="btn-modern" data-bs-toggle="modal" data-bs-target="#modalAgregarUsuario">
                         <i class="bi bi-person-plus"></i> Nuevo Usuario
-                    </a>
+                    </button>
                     <a href="{% url 'inventario:dashboard' %}" class="btn-modern-inventario">
                         <i class="bi bi-boxes"></i> Ver Inventario
                     </a>
@@ -604,76 +601,58 @@
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-custom table-hover mb-0">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Rol</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for u in usuarios %}
-        <tr>
-
-            <td>
-                {% if u.first_name %}
-                    {{ u.first_name }} {{ u.last_name }}
-                {% else %}
-                    {{ u.username }}
-                {% endif %}
-            </td>
-
-            <td>{{ u.email }}</td>
-
-            <td>
-                {% if u.groups.count %}
-                    <span class="badge bg-warning text-dark">
-                        Barbero
-                    </span>
-                {% else %}
-                    <span class="badge bg-primary">
-                        Cliente
-                    </span>
-                {% endif %}
-            </td>
-
-            <td>
-
-                {% if u.groups.count %}
-
-                    <a href="{% url 'administracion:quitar_barbero' u.id %}"
-                       class="btn btn-sm btn-secondary"
-                       onclick="return confirm('¿Quitar rol de barbero?')">
-                        <i class="bi bi-person-dash"></i>
-                        Quitar barbero
-                    </a>
-
-                {% else %}
-
-                    <a href="{% url 'administracion:asignar_barbero' u.id %}"
-                       class="btn btn-sm btn-warning"
-                       onclick="return confirm('¿Asignar como barbero?')">
-                        <i class="bi bi-person-badge"></i>
-                        Hacer barbero
-                    </a>
-
-                {% endif %}
-
-            </td>
-
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="4" class="text-center text-light-brown py-4">
-                <i class="bi bi-people fs-1 d-block mb-2"
-                   style="color:#C9A87C;"></i>
-                No hay usuarios registrados.
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in usuarios %}
+                            <tr>
+                                <td>
+                                    {% if u.first_name %}
+                                        {{ u.first_name }} {{ u.last_name }}
+                                    {% else %}
+                                        {{ u.username }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ u.email }}</td>
+                                <td>
+                                    {% if u.groups.count %}
+                                        <span class="badge bg-warning text-dark">Barbero</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">Cliente</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if u.groups.count %}
+                                        <a href="{% url 'administracion:quitar_barbero' u.id %}"
+                                           class="btn btn-sm btn-secondary"
+                                           onclick="return confirm('¿Quitar rol de barbero?')">
+                                            <i class="bi bi-person-dash"></i> Quitar barbero
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'administracion:asignar_barbero' u.id %}"
+                                           class="btn btn-sm btn-warning"
+                                           onclick="return confirm('¿Asignar como barbero?')">
+                                            <i class="bi bi-person-badge"></i> Hacer barbero
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-light-brown py-4">
+                                    <i class="bi bi-people fs-1 d-block mb-2" style="color:#C9A87C;"></i>
+                                    No hay usuarios registrados.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -778,6 +757,11 @@
                                         data-email="{{ b.email }}">
                                         <i class="bi bi-pencil"></i>
                                     </button>
+                                    <a href="{% url 'administracion:eliminar_barbero' b.id %}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('¿Eliminar este barbero?')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
                                 </td>
                             </tr>
                             {% empty %}
@@ -840,7 +824,8 @@
                                         data-stock="{{ producto.stock_actual }}">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <a href="{% url 'administracion:eliminar_producto' producto.id %}" class="btn btn-sm btn-danger"
+                                    <a href="{% url 'administracion:eliminar_producto_admin' producto.id %}" 
+                                       class="btn btn-sm btn-danger"
                                         onclick="return confirm('¿Eliminar este producto?')">
                                         <i class="bi bi-trash"></i>
                                     </a>
@@ -896,7 +881,8 @@
                                         data-precio="{{ servicio.precio }}" data-duracion="{{ servicio.duracion }}">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <a href="{% url 'administracion:eliminar_servicio' servicio.id %}" class="btn btn-sm btn-danger"
+                                    <a href="{% url 'administracion:eliminar_servicio' servicio.id %}" 
+                                       class="btn btn-sm btn-danger"
                                         onclick="return confirm('¿Eliminar este servicio?')">
                                         <i class="bi bi-trash"></i>
                                     </a>
@@ -919,6 +905,60 @@
     </div>
 
     <!-- ===== MODALES ===== -->
+
+    <!-- MODAL AGREGAR USUARIO (CON CAMPOS IGUALES AL REGISTRO) -->
+    <!-- MODAL AGREGAR USUARIO (CON CÉDULA Y TELÉFONO) -->
+<div class="modal fade" id="modalAgregarUsuario" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-custom">
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title text-yellow"><i class="bi bi-person-plus"></i> Nuevo Usuario</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'administracion:crear_usuario' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label-custom">Nombre *</label>
+                            <input type="text" name="nombre" class="form-control bg-dark-input" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label-custom">Apellido *</label>
+                            <input type="text" name="apellido" class="form-control bg-dark-input" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Cédula *</label>
+                        <input type="text" name="cedula" class="form-control bg-dark-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Teléfono *</label>
+                        <input type="text" name="telefono" class="form-control bg-dark-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Email *</label>
+                        <input type="email" name="email" class="form-control bg-dark-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Contraseña *</label>
+                        <input type="password" name="password" class="form-control bg-dark-input" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Confirmar Contraseña *</label>
+                        <input type="password" name="confirm_password" class="form-control bg-dark-input" required>
+                    </div>
+                </div>
+                <div class="modal-footer modal-footer-custom">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-modern" style="min-width:auto; padding:10px 30px; flex:0 1 auto;">
+                        <i class="bi bi-plus-circle"></i> Crear Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
     <!-- MODAL EDITAR CITA -->
     <div class="modal fade" id="modalEditarCita" tabindex="-1">
@@ -1127,45 +1167,6 @@
         </div>
     </div>
 
-    <!-- MODAL AGREGAR PRODUCTO -->
-    <div class="modal fade" id="modalAgregarProducto" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content modal-content-custom">
-                <div class="modal-header modal-header-custom">
-                    <h5 class="modal-title text-yellow"><i class="bi bi-box-seam"></i> Nuevo Producto</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <form method="POST" action="{% url 'administracion:agregar_servicio' %}">
-                    {% csrf_token %}
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label-custom">Nombre *</label>
-                            <input type="text" name="nombre" class="form-control bg-dark-input" required>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label-custom">Precio *</label>
-                                <input type="number" name="precio" class="form-control bg-dark-input" required
-                                    step="0.01">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label-custom">Stock *</label>
-                                <input type="number" name="stock" class="form-control bg-dark-input" required min="0">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer modal-footer-custom">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn-modern"
-                            style="min-width:auto; padding:10px 30px; flex:0 1 auto;">
-                            <i class="bi bi-plus-circle"></i> Agregar Producto
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <!-- MODAL AGREGAR SERVICIO -->
     <div class="modal fade" id="modalAgregarServicio" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -1174,7 +1175,7 @@
                     <h5 class="modal-title text-yellow"><i class="bi bi-scissors"></i> Nuevo Servicio</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form method="POST" action="{% url 'administracion:agregar_producto' %}">
+                <form method="POST" action="{% url 'administracion:agregar_servicio' %}">
                     {% csrf_token %}
                     <div class="modal-body">
                         <div class="mb-3">

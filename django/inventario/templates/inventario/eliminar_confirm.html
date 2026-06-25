@@ -1,35 +1,99 @@
-{% extends 'base.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="es">
 
-{% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card bg-dark border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Confirmar Eliminación</h5>
-                </div>
-                <div class="card-body text-center py-4">
-                    <i class="bi bi-trash3 text-danger fs-1 mb-3 d-inline-block"></i>
-                    <p class="fs-5 text-white">¿Estás seguro de eliminar este producto?</p>
-                    <p class="text-light-brown">Producto: <strong class="text-white">{{ producto.nombre }}</strong></p>
-                    <p class="text-warning small">⚠️ Esta acción no se puede deshacer.</p>
-                </div>
-                <div class="card-footer bg-dark border-danger">
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'inventario:dashboard' %}" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left"></i> Cancelar
-                        </a>
-                        <form method="POST">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-trash"></i> Eliminar Producto
-                            </button>
-                        </form>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar Producto - BarberSpringfield</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #0B0A08;
+            color: #F5EFE6;
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+        }
+        .navbar-custom {
+            background-color: #0B0A08;
+            border-bottom: 2px solid #F4C542;
+            padding: 0.8rem 0;
+        }
+        .navbar-brand-custom {
+            font-family: 'Playfair Display', 'Georgia', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #F4C542 !important;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .navbar-brand-custom span { color: #C9A87C; }
+        .navbar-brand-custom img {
+            height: 40px; width: 40px; object-fit: cover; border-radius: 50%;
+        }
+        .card-custom {
+            background-color: #1E1A15;
+            border-radius: 20px;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            overflow: hidden;
+        }
+        .card-header-danger {
+            background-color: #dc3545;
+            color: white;
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+        }
+        .text-light-brown { color: #C9A87C !important; }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar-custom">
+        <div class="container">
+            <a class="navbar-brand-custom" href="{% url 'inicio' %}">
+                <img src="{% static 'logo.jpeg' %}" alt="Logo"> Barber <span>Springfield</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card-custom">
+                    <div class="card-header-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Confirmar Eliminación
+                    </div>
+                    <div class="card-body text-center py-4">
+                        <i class="bi bi-trash3 text-danger fs-1 mb-3 d-inline-block"></i>
+                        <p class="fs-5">¿Estás seguro de eliminar este producto?</p>
+                        <p class="text-light-brown">
+                            Producto: <strong class="text-white">{{ producto.nombre }}</strong>
+                        </p>
+                        <p class="text-warning small">⚠️ Esta acción no se puede deshacer.</p>
+                    </div>
+                    <div class="card-footer bg-dark border-0 p-3">
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'inventario:dashboard' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-trash"></i> Eliminar Producto
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
