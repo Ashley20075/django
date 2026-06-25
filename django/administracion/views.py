@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from citas.models import Cita, Servicio
+from usuarios.models import Perfil
 
 try:
     from barberos.models import Barbero
@@ -26,17 +27,20 @@ from inventario.models import Producto
 def panel_admin(request):
     usuarios = User.objects.all()
     citas = Cita.objects.all().order_by('-fecha')
-    
-    try:
-        barberos = Barbero.objects.all()
-        cantidad_barberos = barberos.count()
-    except:
-        barberos = []
-        cantidad_barberos = 0
-    
+
+    grupo_barberos = Group.objects.get_or_create(
+        name='Barberos'
+    )[0]
+
+    cantidad_barberos = User.objects.filter(
+        groups=grupo_barberos
+    ).count()
+
+    barberos = Barbero.objects.all()
+
     servicios = Servicio.objects.all()
     productos = Producto.objects.all()
-    
+
     context = {
         'usuarios': usuarios,
         'citas': citas,
@@ -45,23 +49,65 @@ def panel_admin(request):
         'productos': productos,
         'cantidad_barberos': cantidad_barberos,
     }
-    return render(request, 'administracion/panel_administrador.html', context)
+
+    return render(
+        request,
+        'administracion/panel_administrador.html',
+        context
+    )
 
 @login_required
 def asignar_barbero(request, id):
     user = get_object_or_404(User, id=id)
+
     group, created = Group.objects.get_or_create(name='Barberos')
     user.groups.add(group)
-    messages.success(request, f'✅ Usuario "{user.username}" ahora es barbero.')
-    return redirect('panel_admin')
+
+    if not Barbero.objects.filter(email=user.email).exists():
+
+        nombre_completo = f"{user.first_name} {user.last_name}".strip()
+
+        try:
+            perfil = Perfil.objects.get(usuario=user)
+
+            cedula = perfil.cedula
+            telefono = perfil.telefono
+
+        except Perfil.DoesNotExist:
+
+            cedula = "Sin registrar"
+            telefono = "Sin registrar"
+
+        Barbero.objects.create(
+            nombre=nombre_completo if nombre_completo else user.username,
+            cedula=cedula,
+            especialidad="General",
+            telefono=telefono,
+            email=user.email
+        )
+
+    messages.success(
+        request,
+        f'✅ Usuario "{user.username}" ahora es barbero.'
+    )
+
+    return redirect('administracion:panel_admin')
 
 @login_required
 def quitar_barbero(request, id):
     user = get_object_or_404(User, id=id)
+
     group = Group.objects.get(name='Barberos')
     user.groups.remove(group)
-    messages.success(request, f'✅ Usuario "{user.username}" ya no es barbero.')
-    return redirect('panel_admin')
+
+    Barbero.objects.filter(email=user.email).delete()
+
+    messages.success(
+        request,
+        f'✅ Usuario "{user.username}" ya no es barbero.'
+    )
+
+    return redirect('administracion:panel_admin')
 
 @login_required
 def editar_cita(request, id):
@@ -75,15 +121,15 @@ def editar_cita(request, id):
         cita.estado = request.POST.get('estado')
         cita.save()
         messages.success(request, '✅ Cita actualizada correctamente.')
-        return redirect('panel_admin')
-    return redirect('panel_admin')
+        return redirect('administracion:panel_admin')
+    return redirect('administracion:panel_admin')
 
 @login_required
 def eliminar_cita(request, id):
     cita = get_object_or_404(Cita, id=id)
     cita.delete()
     messages.success(request, '✅ Cita eliminada correctamente.')
-    return redirect('panel_admin')
+    return redirect('administracion:panel_admin')
 
 @login_required
 def agregar_barbero(request):
@@ -99,8 +145,8 @@ def agregar_barbero(request):
             messages.success(request, f'✅ Barbero "{barbero.nombre}" agregado correctamente.')
         except Exception as e:
             messages.error(request, f'❌ Error: {str(e)}')
-        return redirect('panel_admin')
-    return redirect('panel_admin')
+        return redirect('administracion:panel_admin')
+    return redirect('administracion:panel_admin')
 
 @login_required
 def editar_barbero(request, id):
@@ -116,7 +162,7 @@ def editar_barbero(request, id):
             messages.success(request, '✅ Barbero actualizado correctamente.')
     except Exception as e:
         messages.error(request, f'❌ Error: {str(e)}')
-    return redirect('panel_admin')
+    return redirect('administracion:panel_admin')
 
 @login_required
 def eliminar_barbero(request, id):
@@ -127,7 +173,7 @@ def eliminar_barbero(request, id):
         messages.success(request, f'✅ Barbero "{nombre}" eliminado correctamente.')
     except Exception as e:
         messages.error(request, f'❌ Error: {str(e)}')
-    return redirect('panel_admin')
+    return redirect('administracion:panel_admin')
 
 @login_required
 def agregar_producto(request):
@@ -138,8 +184,8 @@ def agregar_producto(request):
             stock_actual=request.POST.get('stock')
         )
         messages.success(request, f'✅ Producto "{producto.nombre}" agregado correctamente.')
-        return redirect('panel_admin')
-    return redirect('panel_admin')
+        return redirect('administracion:panel_admin')
+    return redirect('administracion:panel_admin')
 
 @login_required
 def editar_producto(request, id):
@@ -150,8 +196,8 @@ def editar_producto(request, id):
         producto.stock_actual = request.POST.get('stock')
         producto.save()
         messages.success(request, '✅ Producto actualizado correctamente.')
-        return redirect('panel_admin')
-    return redirect('panel_admin')
+        return redirect('administracion:panel_admin')
+    return redirect('administracion:panel_admin')
 
 @login_required
 def eliminar_producto_admin(request, id):
@@ -159,7 +205,7 @@ def eliminar_producto_admin(request, id):
     nombre = producto.nombre
     producto.delete()
     messages.success(request, f'✅ Producto "{nombre}" eliminado correctamente.')
-    return redirect('panel_admin')
+    return redirect('administracion:panel_admin')
 
 @login_required
 def agregar_servicio(request):
@@ -171,8 +217,8 @@ def agregar_servicio(request):
             duracion=request.POST.get('duracion')
         )
         messages.success(request, f'✅ Servicio "{servicio.nombre}" agregado correctamente.')
-        return redirect('panel_admin')
-    return redirect('panel_admin')
+        return redirect('administracion:panel_admin')
+    return redirect('administracion:panel_admin')
 
 @login_required
 def editar_servicio(request, id):
@@ -184,8 +230,8 @@ def editar_servicio(request, id):
         servicio.duracion = request.POST.get('duracion')
         servicio.save()
         messages.success(request, '✅ Servicio actualizado correctamente.')
-        return redirect('panel_admin')
-    return redirect('panel_admin')
+        return redirect('administracion:panel_admin')
+    return redirect('administracion:panel_admin')
 
 @login_required
 def eliminar_servicio(request, id):
@@ -193,4 +239,4 @@ def eliminar_servicio(request, id):
     nombre = servicio.nombre
     servicio.delete()
     messages.success(request, f'✅ Servicio "{nombre}" eliminado correctamente.')
-    return redirect('panel_admin')
+    return redirect('administracion:panel_admin')

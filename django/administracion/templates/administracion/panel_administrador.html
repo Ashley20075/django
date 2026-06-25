@@ -604,49 +604,76 @@
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-custom table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Rol</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for u in usuarios %}
-                            <tr>
-                                <td>{{ u.first_name }} {{ u.last_name }}</td>
-                                <td>{{ u.email }}</td>
-                                <td>
-                                    {% if u.groups.all %}
-                                    <span class="badge bg-warning text-dark">Barbero</span>
-                                    {% else %}
-                                    <span class="badge bg-primary">Cliente</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if u.groups.all %}
-                                    <a href="{% url 'administracion:quitar_barbero' u.id %}" class="btn btn-sm btn-secondary" onclick="return confirm('¿Quitar rol de barbero?')">
-                                        <i class="bi bi-person-dash"></i> Quitar barbero
-                                    </a>
-                                    {% else %}
-                                    <a href="{% url 'administracion:asignar_barbero' u.id %}" class="btn btn-sm btn-warning"
-                                        onclick="return confirm('¿Asignar como barbero?')">
-                                        <i class="bi bi-person-badge"></i> Hacer barbero
-                                    </a>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center text-light-brown py-4">
-                                    <i class="bi bi-people fs-1 d-block mb-2" style="color:#C9A87C;"></i>
-                                    No hay usuarios registrados.
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for u in usuarios %}
+        <tr>
+
+            <td>
+                {% if u.first_name %}
+                    {{ u.first_name }} {{ u.last_name }}
+                {% else %}
+                    {{ u.username }}
+                {% endif %}
+            </td>
+
+            <td>{{ u.email }}</td>
+
+            <td>
+                {% if u.groups.count %}
+                    <span class="badge bg-warning text-dark">
+                        Barbero
+                    </span>
+                {% else %}
+                    <span class="badge bg-primary">
+                        Cliente
+                    </span>
+                {% endif %}
+            </td>
+
+            <td>
+
+                {% if u.groups.count %}
+
+                    <a href="{% url 'administracion:quitar_barbero' u.id %}"
+                       class="btn btn-sm btn-secondary"
+                       onclick="return confirm('¿Quitar rol de barbero?')">
+                        <i class="bi bi-person-dash"></i>
+                        Quitar barbero
+                    </a>
+
+                {% else %}
+
+                    <a href="{% url 'administracion:asignar_barbero' u.id %}"
+                       class="btn btn-sm btn-warning"
+                       onclick="return confirm('¿Asignar como barbero?')">
+                        <i class="bi bi-person-badge"></i>
+                        Hacer barbero
+                    </a>
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="text-center text-light-brown py-4">
+                <i class="bi bi-people fs-1 d-block mb-2"
+                   style="color:#C9A87C;"></i>
+                No hay usuarios registrados.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
                 </div>
             </div>
         </div>

@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from citas.models import Cita, Barbero, Servicio
 from inventario.models import Producto
+from django.contrib.auth.models import User, Group
 
 # ============================================
 # VISTAS DEL PANEL DEL CLIENTE
@@ -129,16 +130,32 @@ def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        
-        user = authenticate(request, username=email, password=password)
-        
+
+        try:
+            usuario = User.objects.get(email=email)
+            username = usuario.username
+        except User.DoesNotExist:
+            username = None
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
         if user is not None:
             login(request, user)
-            return redirect('panel_cliente')
-        else:
-            messages.error(request, 'Credenciales inválidas')
-            return render(request, 'login.html')
-    
+
+        if user.is_superuser:
+            return redirect('administracion:panel_admin')
+
+        if user.groups.filter(name='Barberos').exists():
+            return redirect('panel_barbero')
+
+        return redirect('panel_cliente')
+
+        messages.error(request, 'Credenciales inválidas')
+
     return render(request, 'login.html')
 
 def logout_view(request):
