@@ -9,5 +9,6 @@ urlpatterns = [
     path('editar/<int:producto_id>/', views.editar_producto, name='editar'),
     path('movimiento/<int:producto_id>/', views.movimiento_inventario, name='movimiento'),
     path('eliminar/<int:producto_id>/', views.eliminar_producto, name='eliminar'),
-    path('historial/', views.historial_movimientos, name='historial'),  # <-- NUEVA URL
+    path('historial/', views.historial_movimientos, name='historial'),  
+    path('reporte/pdf/',views.reporte_inventario_pdf,name='reporte_pdf'),
 ]

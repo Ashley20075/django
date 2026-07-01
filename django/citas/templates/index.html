@@ -176,61 +176,39 @@
             <p class="text-light-brown">Cada corte, cada arreglo, hecho con precisión y dedicación</p>
         </div>
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card-servicio">
-                    <i class="bi bi-scissors"></i>
-                    <h3>Taper Fade</h3>
-                    <p>Degradado limpio desde la sien hasta la nuca. El corte más pedido del momento.</p>
-                    <div class="precio">$14.000</div>
-                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card-servicio">
-                    <i class="bi bi-wind"></i>
-                    <h3>Mullet</h3>
-                    <p>Corto por los lados, largo por detrás. Estilo retro moderno con mucha personalidad.</p>
-                    <div class="precio">$14.000</div>
-                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card-servicio">
-                    <i class="bi bi-chat-left-text"></i>
-                    <h3>Corte Clásico</h3>
-                    <p>Tú le explicas al barbero lo que quieres. Corte personalizado a tu medida.</p>
-                    <div class="precio">$12.000</div>
-                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card-servicio">
-                    <i class="bi bi-fullscreen-exit"></i>
-                    <h3>Buzz Cut</h3>
-                    <p>Muy corto y parejo en toda la cabeza. Fresco, limpio y de bajo mantenimiento.</p>
-                    <div class="precio">$10.000</div>
-                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card-servicio">
-                    <i class="bi bi-layers"></i>
-                    <h3>Corte Texturizado</h3>
-                    <p>Con capas y movimiento natural. Ideal para cabello rizado o con volumen.</p>
-                    <div class="precio">$13.000</div>
-                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card-servicio">
-                    <i class="bi bi-plus-circle"></i>
-                    <h3>Adicionales</h3>
-                    <p>Arreglo de barba, cejas o diseño con líneas. Se agregan a cualquier corte al reservar.</p>
-                    <div class="precio">Desde $5.000</div>
-                    <a href="{% url 'login' %}" class="btn btn-outline-custom btn-sm mt-2">Reservar</a>
-                </div>
-            </div>
+
+{% for servicio in servicios %}
+
+<div class="col-md-4">
+
+    <div class="card-servicio">
+
+        <i class="bi bi-scissors"></i>
+
+        <h3>{{ servicio.nombre }}</h3>
+
+        <p>{{ servicio.descripcion }}</p>
+
+        <div class="precio">
+
+            ${{ servicio.precio }}
+
         </div>
+
+        <a href="{% url 'login' %}"
+           class="btn btn-outline-custom btn-sm mt-2">
+
+            Reservar
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
     </div>
 </section>
 

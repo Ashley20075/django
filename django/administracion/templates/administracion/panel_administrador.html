@@ -602,13 +602,14 @@
                 <div class="table-responsive">
                     <table class="table table-custom table-hover mb-0">
                         <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Rol</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
+    <tr>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+    </tr>
+</thead>
                         <tbody>
                             {% for u in usuarios %}
                             <tr>
@@ -628,6 +629,13 @@
                                     {% endif %}
                                 </td>
                                 <td>
+    {% if u.is_active %}
+        <span class="badge bg-success">Activo</span>
+    {% else %}
+        <span class="badge bg-danger">Inactivo</span>
+    {% endif %}
+</td>
+                                <td>
                                     {% if u.groups.all %}
                                         <a href="{% url 'administracion:quitar_barbero' u.id %}"
                                            class="btn btn-sm btn-secondary"
@@ -641,6 +649,19 @@
                                             <i class="bi bi-person-badge"></i> Hacer barbero
                                         </a>
                                     {% endif %}
+                                    {% if u.is_active %}
+<a href="{% url 'administracion:desactivar_usuario' u.id %}"
+   class="btn btn-sm btn-danger mt-1"
+   onclick="return confirm('¿Deseas desactivar este usuario?')">
+    <i class="bi bi-person-x"></i> Desactivar
+</a>
+{% else %}
+<a href="{% url 'administracion:activar_usuario' u.id %}"
+   class="btn btn-sm btn-success mt-1"
+   onclick="return confirm('¿Deseas activar este usuario?')">
+    <i class="bi bi-person-check"></i> Activar
+</a>
+{% endif %}
                                 </td>
                             </tr>
                             {% empty %}
@@ -876,11 +897,15 @@ data-estado="{{ cita.estado }}"
                                 <td>${{ servicio.precio }}</td>
                                 <td>{{ servicio.duracion }} min</td>
                                 <td>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#modalEditarServicio" data-id="{{ servicio.id }}"
-                                        data-nombre="{{ servicio.nombre }}"
-                                        data-descripcion="{{ servicio.descripcion }}"
-                                        data-precio="{{ servicio.precio }}" data-duracion="{{ servicio.duracion }}">
+                                    <button
+    class="btn btn-sm btn-warning"
+    data-bs-toggle="modal"
+    data-bs-target="#modalEditarServicio"
+    data-url="{% url 'administracion:editar_servicio' servicio.id %}"
+    data-nombre="{{ servicio.nombre }}"
+    data-descripcion="{{ servicio.descripcion }}"
+    data-precio="{{ servicio.precio }}"
+    data-duracion="{{ servicio.duracion }}">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <a href="{% url 'administracion:eliminar_servicio' servicio.id %}" 
@@ -1143,7 +1168,7 @@ data-estado="{{ cita.estado }}"
                     <h5 class="modal-title text-yellow"><i class="bi bi-pencil"></i> Editar Servicio</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form method="POST" id="formEditarServicio">
+                <form method="POST" id="formEditarServicio" action="">
                     {% csrf_token %}
                     <div class="modal-body">
                         <div class="mb-3">
@@ -1271,7 +1296,7 @@ document.getElementById('modalEditarCita').addEventListener('show.bs.modal', fun
             document.getElementById('editServicioDescripcion').value = btn.dataset.descripcion || '';
             document.getElementById('editServicioPrecio').value = btn.dataset.precio || 0;
             document.getElementById('editServicioDuracion').value = btn.dataset.duracion || 0;
-            document.getElementById('formEditarServicio').action = `/admin-panel/editar-servicio/${btn.dataset.id}/`;
+            document.getElementById('formEditarServicio').action = btn.dataset.url;
         });
     </script>
 </body>

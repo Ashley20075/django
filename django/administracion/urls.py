@@ -19,4 +19,15 @@ urlpatterns = [
     path('agregar-servicio/', views.agregar_servicio, name='agregar_servicio'),
     path('editar-servicio/<int:id>/', views.editar_servicio, name='editar_servicio'),
     path('eliminar-servicio/<int:id>/', views.eliminar_servicio, name='eliminar_servicio'),
+    path(
+    'desactivar-usuario/<int:id>/',
+    views.desactivar_usuario,
+    name='desactivar_usuario'
+),
+
+path(
+    'activar-usuario/<int:id>/',
+    views.activar_usuario,
+    name='activar_usuario'
+),
 ]

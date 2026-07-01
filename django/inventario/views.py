@@ -6,6 +6,22 @@ from django.db.models import Sum
 from django.utils import timezone
 from .models import Producto, MovimientoInventario
 from .forms import ProductoForm, MovimientoForm
+from django.http import HttpResponse
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Table,
+    TableStyle,
+    Paragraph
+)
+from datetime import datetime 
+import os
+
+from reportlab.platypus import Image
+from django.conf import settings
+
+
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
 
 @login_required
 def dashboard_inventario(request):
@@ -137,3 +153,152 @@ def historial_movimientos(request):
         'tipos': MovimientoInventario.TIPO_MOVIMIENTO,
     }
     return render(request, 'inventario/historial_movimientos.html', context)
+
+@login_required
+def reporte_inventario_pdf(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte_inventario.pdf"'
+
+    doc = SimpleDocTemplate(response)
+
+    estilos = getSampleStyleSheet()
+    elementos = []
+
+    # ================= LOGO =================
+
+    ruta_logo = os.path.join(
+    settings.BASE_DIR,
+    "inventario",
+    "static",
+    "img",
+    "logo.jpeg"
+)
+
+    if os.path.exists(ruta_logo):
+        logo = Image(ruta_logo)
+        logo.drawWidth = 80
+        logo.drawHeight = 80
+        elementos.append(logo)
+
+    # ================= TITULO =================
+
+    elementos.append(
+        Paragraph(
+            "<b>REPORTE DE INVENTARIO</b>",
+            estilos['Title']
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            "Sistema de Gestión para Barbería",
+            estilos['Normal']
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            f"Fecha de generación: {datetime.now().strftime('%d/%m/%Y %H:%M')}",
+            estilos['Normal']
+        )
+    )
+
+    elementos.append(Paragraph(" ", estilos['Normal']))
+
+    # ================= TABLA =================
+
+    datos = [[
+        "Producto",
+        "Stock",
+        "Stock mínimo",
+        "Precio",
+        "Estado"
+    ]]
+
+    productos = Producto.objects.filter(
+        activo=True
+    ).order_by("nombre")
+
+    for producto in productos:
+
+        if producto.stock_actual == 0:
+            estado = "Agotado"
+
+        elif producto.stock_actual <= producto.stock_minimo:
+            estado = "Bajo"
+
+        else:
+            estado = "Disponible"
+
+        datos.append([
+            producto.nombre,
+            str(producto.stock_actual),
+            str(producto.stock_minimo),
+            f"$ {producto.precio_unitario}",
+            estado
+        ])
+
+    tabla = Table(datos)
+
+    tabla.setStyle(TableStyle([
+
+        ('BACKGROUND', (0,0), (-1,0), colors.black),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+
+        ('BACKGROUND', (0,1), (-1,-1), colors.beige),
+
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+
+        ('BOTTOMPADDING', (0,0), (-1,0), 10),
+
+    ]))
+
+    elementos.append(tabla)
+
+    elementos.append(Paragraph(" ", estilos['Normal']))
+
+    # ================= RESUMEN =================
+
+    total_productos = Producto.objects.filter(
+        activo=True
+    ).count()
+
+    stock_total = Producto.objects.filter(
+        activo=True
+    ).aggregate(
+        total=Sum('stock_actual')
+    )['total'] or 0
+
+    bajo_stock = Producto.objects.filter(
+        activo=True,
+        stock_actual__lte=models.F('stock_minimo')
+    ).count()
+
+    elementos.append(
+        Paragraph(
+            f"<b>Total de productos:</b> {total_productos}",
+            estilos['Normal']
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            f"<b>Stock total:</b> {stock_total}",
+            estilos['Normal']
+        )
+    )
+
+    elementos.append(
+        Paragraph(
+            f"<b>Productos con bajo stock:</b> {bajo_stock}",
+            estilos['Normal']
+        )
+    )
+
+    doc.build(elementos)
+
+    return response

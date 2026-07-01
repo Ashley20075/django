@@ -391,3 +391,32 @@ def eliminar_servicio(request, id):
     )
 
     return redirect('administracion:panel_admin')
+
+@login_required
+def desactivar_usuario(request, id):
+    usuario = get_object_or_404(User, id=id)
+
+    usuario.is_active = False
+    usuario.save()
+
+    messages.success(
+        request,
+        f'✅ El usuario "{usuario.username}" fue desactivado.'
+    )
+
+    return redirect('administracion:panel_admin')
+
+
+@login_required
+def activar_usuario(request, id):
+    usuario = get_object_or_404(User, id=id)
+
+    usuario.is_active = True
+    usuario.save()
+
+    messages.success(
+        request,
+        f'✅ El usuario "{usuario.username}" fue activado.'
+    )
+
+    return redirect('administracion:panel_admin')
