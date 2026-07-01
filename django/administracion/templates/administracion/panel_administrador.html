@@ -621,14 +621,14 @@
                                 </td>
                                 <td>{{ u.email }}</td>
                                 <td>
-                                    {% if u.groups.count %}
+                                    {% if u.groups.all %}
                                         <span class="badge bg-warning text-dark">Barbero</span>
                                     {% else %}
                                         <span class="badge bg-primary">Cliente</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if u.groups.count %}
+                                    {% if u.groups.all %}
                                         <a href="{% url 'administracion:quitar_barbero' u.id %}"
                                            class="btn btn-sm btn-secondary"
                                            onclick="return confirm('¿Quitar rol de barbero?')">
@@ -680,11 +680,11 @@
                         <tbody>
                             {% for cita in citas %}
                             <tr>
-                                <td>{{ cita.cliente }}</td>
-                                <td>{{ cita.servicio }}</td>
+                                <td>{{ cita.cliente.nombre }}</td>
+                                <td>{{ cita.servicio.nombre }}</td>
                                 <td>{{ cita.fecha|date:"d/m/Y" }}</td>
                                 <td>{{ cita.hora }}</td>
-                                <td>{{ cita.barbero }}</td>
+                                <td>{{ cita.barbero.nombre }}</td>
                                 <td>
                                     {% if cita.estado == "Confirmada" %}
                                     <span class="badge bg-success">Confirmada</span>
@@ -696,10 +696,12 @@
                                 </td>
                                 <td>
                                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#modalEditarCita" data-id="{{ cita.id }}"
-                                        data-cliente="{{ cita.cliente }}" data-servicio="{{ cita.servicio }}"
-                                        data-fecha="{{ cita.fecha|date:'Y-m-d' }}" data-hora="{{ cita.hora }}"
-                                        data-barbero="{{ cita.barbero }}" data-estado="{{ cita.estado }}">
+                                        data-bs-target="#modalEditarCita"data-cliente="{{ cita.cliente.id }}"
+data-servicio="{{ cita.servicio.id }}"
+data-fecha="{{ cita.fecha|date:'Y-m-d' }}"
+data-hora="{{ cita.hora }}"
+data-barbero="{{ cita.barbero.id }}"
+data-estado="{{ cita.estado }}"
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <a href="{% url 'administracion:eliminar_cita' cita.id %}" class="btn btn-sm btn-danger"
@@ -973,13 +975,23 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label-custom">Cliente</label>
-                            <input type="text" name="cliente" id="editCitaCliente" class="form-control bg-dark-input">
+                            <select name="cliente" id="editCitaCliente">
+
+{% for cliente in clientes %}
+<option value="{{ cliente.id }}">
+    {{ cliente.nombre }}
+</option>
+{% endfor %}
+
+</select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label-custom">Servicio</label>
                             <select name="servicio" id="editCitaServicio" class="form-select bg-dark-input">
                                 {% for servicio in servicios %}
-                                <option value="{{ servicio.nombre }}">{{ servicio.nombre }}</option>
+                                <option value="{{ servicio.id }}">
+    {{ servicio.nombre }}
+</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -1004,7 +1016,9 @@
                             <label class="form-label-custom">Barbero</label>
                             <select name="barbero" id="editCitaBarbero" class="form-select bg-dark-input">
                                 {% for b in barberos %}
-                                <option value="{{ b.nombre }}">{{ b.nombre }}</option>
+                                <option value="{{ b.id }}">
+    {{ b.nombre }}
+</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -1214,16 +1228,21 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // MODAL EDITAR CITA
-        document.getElementById('modalEditarCita').addEventListener('show.bs.modal', function (e) {
-            const btn = e.relatedTarget;
-            document.getElementById('editCitaCliente').value = btn.dataset.cliente || '';
-            document.getElementById('editCitaFecha').value = btn.dataset.fecha || '';
-            document.getElementById('editCitaServicio').value = btn.dataset.servicio || '';
-            document.getElementById('editCitaHora').value = btn.dataset.hora || '';
-            document.getElementById('editCitaBarbero').value = btn.dataset.barbero || '';
-            document.getElementById('editCitaEstado').value = btn.dataset.estado || 'Pendiente';
-            document.getElementById('formEditarCita').action = `/admin-panel/editar-cita/${btn.dataset.id}/`;
-        });
+document.getElementById('modalEditarCita').addEventListener('show.bs.modal', function (e) {
+
+    const btn = e.relatedTarget;
+
+    document.getElementById('editCitaCliente').value = btn.dataset.cliente;
+    document.getElementById('editCitaServicio').value = btn.dataset.servicio;
+    document.getElementById('editCitaFecha').value = btn.dataset.fecha;
+    document.getElementById('editCitaHora').value = btn.dataset.hora;
+    document.getElementById('editCitaBarbero').value = btn.dataset.barbero;
+    document.getElementById('editCitaEstado').value = btn.dataset.estado;
+
+    document.getElementById('formEditarCita').action =
+        `/admin-panel/editar-cita/${btn.dataset.id}/`;
+
+});
 
         // MODAL EDITAR BARBERO
         document.getElementById('modalEditarBarbero').addEventListener('show.bs.modal', function (e) {

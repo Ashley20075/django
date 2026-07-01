@@ -1,11 +1,3 @@
-cliente@barberspringfield.com
-cliente123
-
-barbero@barberspringfield.com
-barbero123
-
-samuel@gmail.com
-1234
 
 crea un entorno virtual
 python -m venv venv
@@ -25,3 +17,10 @@ python manage.py createsuperuser
 
 iniciar servidor
 python manage.py runserver
+
+
+set PATH=C:\Users\aprendiz\Desktop\windows_10_cmake_Release_Graphviz-15.0.0-win32\Graphviz-15.0.0-win32\bin;%PATH%
+
+py manage.py makemigrations
+py manage.py migrate
+py manage.py graph_models -a -o modelo_barberia.png

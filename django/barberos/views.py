@@ -21,7 +21,9 @@ def panel_barbero(request):
         return redirect('inicio')
     
     # Obtener todas las citas del barbero
-    citas = Cita.objects.filter(barbero=barbero.nombre).order_by('fecha', 'hora')
+    citas = Cita.objects.filter(
+    barbero=barbero
+).order_by('fecha', 'hora')
     
     # ===== FILTROS =====
     estado = request.GET.get('estado')
@@ -71,7 +73,7 @@ def confirmar_cita(request, id):
     # Verificar que la cita pertenece al barbero logueado
     try:
         barbero = Barbero.objects.get(email=request.user.email, activo=True)
-        if cita.barbero != barbero.nombre:
+        if cita.barbero != barbero:
             messages.error(request, '❌ No tienes permiso para confirmar esta cita.')
             return redirect('barberos:panel_barbero')
     except Barbero.DoesNotExist:
@@ -80,7 +82,7 @@ def confirmar_cita(request, id):
     
     cita.estado = "Confirmada"
     cita.save()
-    messages.success(request, f'✅ Cita de {cita.cliente} confirmada.')
+    messages.success(request, f'✅ Cita de {cita.cliente.nombre} confirmada.')
     return redirect('barberos:panel_barbero')
 
 @login_required(login_url='login')
@@ -90,7 +92,7 @@ def cancelar_cita(request, id):
     # Verificar que la cita pertenece al barbero logueado
     try:
         barbero = Barbero.objects.get(email=request.user.email, activo=True)
-        if cita.barbero != barbero.nombre:
+        if cita.barbero != barbero:
             messages.error(request, '❌ No tienes permiso para cancelar esta cita.')
             return redirect('barberos:panel_barbero')
     except Barbero.DoesNotExist:
@@ -111,7 +113,10 @@ def cancelar_cita(request, id):
 
         cita.estado = "Cancelada"
         cita.save()
-        messages.success(request, f'✅ Cita de {cita.cliente} cancelada.')
+        messages.success(
+    request,
+    f'✅ Cita de {cita.cliente.nombre} cancelada.'
+)
 
     return redirect('barberos:panel_barbero')
 

@@ -1,14 +1,7 @@
 from django.db import models
+from barberos.models import Barbero
+from clientes.models import Cliente
 
-class Barbero(models.Model):
-    nombre       = models.CharField(max_length=100)
-    cedula       = models.CharField(max_length=20, unique=True)
-    especialidad = models.CharField(max_length=100)
-    telefono     = models.CharField(max_length=20)
-    email        = models.EmailField(unique=True)
-
-    def __str__(self):
-        return self.nombre
 
 class Servicio(models.Model):
     nombre      = models.CharField(max_length=100)
@@ -20,20 +13,42 @@ class Servicio(models.Model):
         return self.nombre
 
 class Cita(models.Model):
-    ESTADOS = [
-        ('Pendiente', 'Pendiente'),
-        ('Confirmada', 'Confirmada'),
-        ('Cancelada', 'Cancelada'),
-    ]
 
-    cliente = models.CharField(max_length=100)
-    servicio = models.CharField(max_length=100)
+    ESTADOS = [
+    ('Pendiente', 'Pendiente'),
+    ('Confirmada', 'Confirmada'),
+    ('Cancelada', 'Cancelada'),
+]
+
+    cliente = models.ForeignKey(
+        Cliente,
+        on_delete=models.CASCADE,
+        related_name="citas"
+    )
+
+    servicio = models.ForeignKey(
+        Servicio,
+        on_delete=models.CASCADE
+    )
+
+    barbero = models.ForeignKey(
+        Barbero,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="citas"
+    )
+
     adicionales = models.CharField(max_length=200, blank=True, default='')
     productos = models.CharField(max_length=200, blank=True, default='')
+
     fecha = models.DateField()
     hora = models.CharField(max_length=20)
-    barbero = models.CharField(max_length=100)  # <-- Campo para el nombre del barbero
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='Pendiente')
-    
+
+    estado = models.CharField(
+        max_length=20,
+        choices=ESTADOS,
+        default="Pendiente"
+    ) 
     def __str__(self):
         return f"{self.cliente} - {self.servicio} - {self.fecha} - {self.barbero}"

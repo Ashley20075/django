@@ -33,10 +33,14 @@
     </script>
 <script>
     const preciosServicios = {
-        {% for servicio in servicios %}
-        "{{ servicio.nombre }}": {{ servicio.precio }},
-        {% endfor %}
-    };
+
+{% for servicio in servicios %}
+
+"{{ servicio.id }}": {{ servicio.precio }},
+
+{% endfor %}
+
+};
 
     const precioAdicional = 5000;
 
@@ -49,8 +53,8 @@
         const checkboxesAdic = document.querySelectorAll('input[name="adicionales"]:checked');
         const checkboxesProd = document.querySelectorAll('input[name="productos"]:checked');
 
-        const nombreServicio = servicioRadio ? servicioRadio.value : '';
-        const precioBase     = preciosServicios[nombreServicio] || 0;
+        const servicioSeleccionado = servicioRadio ? servicioRadio.value : '';
+const precioBase = preciosServicios[servicioSeleccionado] || 0;
         const precioAdic     = checkboxesAdic.length * precioAdicional;
 
         let precioProd = 0;
@@ -192,13 +196,15 @@
     <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
         {% for servicio in servicios %}
         <div class="form-check mb-2">
-            <input class="form-check-input servicio-radio"
-                   type="radio"
-                   name="servicio"
-                   value="{{ servicio.nombre }}"
-                   id="serv{{ servicio.id }}"
-                   data-precio="{{ servicio.precio }}"
-                   {% if forloop.first %}checked{% endif %}>
+            <input
+    class="form-check-input servicio-radio"
+    type="radio"
+    name="servicio"
+    value="{{ servicio.id }}"
+    id="serv{{ servicio.id }}"
+    data-precio="{{ servicio.precio }}"
+    {% if forloop.first %}checked{% endif %}
+>
             <label class="form-check-label text-light" for="serv{{ servicio.id }}">
                 ✂️ {{ servicio.nombre }}
                 <small class="text-yellow">${{ servicio.precio|floatformat:0 }}</small>
@@ -281,7 +287,9 @@
                 <label class="form-label-custom">💈 Barbero</label>
                 <select class="form-select bg-dark-input" name="barbero">
     {% for barbero in barberos %}
-    <option value="{{ barbero.nombre }}">{{ barbero.nombre }} - {{ barbero.especialidad }}</option>
+    <option value="{{ barbero.id }}">
+    {{ barbero.nombre }} - {{ barbero.especialidad }}
+</option>
     {% endfor %}
 </select>
             </div>
