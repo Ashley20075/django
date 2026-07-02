@@ -3,16 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 
 from clientes.models import Cliente
 from citas.models import Cita, Servicio
 from barberos.models import Barbero
 from inventario.models import Producto
-
-
-# ============================================
-# VISTAS DEL PANEL DEL CLIENTE
-# ============================================
 
 @login_required(login_url='login')
 def panel_cliente(request):
@@ -42,18 +38,23 @@ def panel_cliente(request):
     servicios = Servicio.objects.all()
     productos = Producto.objects.all()
 
-    return render(request, 'dashboard_cliente.html', {
-        'nombre': cliente.nombre,
-        'proximos': proximos,
-        'historial': historial,
-        'barberos': barberos,
-        'servicios': servicios,
-        'productos': productos,
-    })
+    return render(
+        request,
+        "dashboard_cliente.html",
+        {
+            "nombre": cliente.nombre,
+            "proximos": proximos,
+            "historial": historial,
+            "barberos": barberos,
+            "servicios": servicios,
+            "productos": productos,
+        }
+    )
 
 
 @login_required(login_url='login')
 def agendar_cita(request):
+
     if request.method == "POST":
 
         adicionales = request.POST.getlist("adicionales")
@@ -63,6 +64,7 @@ def agendar_cita(request):
         productos_str = ", ".join(productos_seleccionados) if productos_seleccionados else "Ninguno"
 
         try:
+
             cliente = Cliente.objects.get(user=request.user)
 
             barbero = Barbero.objects.get(
@@ -74,26 +76,66 @@ def agendar_cita(request):
                 id=request.POST.get("servicio")
             )
 
+            fecha = request.POST.get("fecha")
+            hora = request.POST.get("hora")
+
         except (Cliente.DoesNotExist, Barbero.DoesNotExist, Servicio.DoesNotExist):
+
             messages.error(request, "❌ Datos inválidos.")
             return redirect("panel_cliente")
 
-        Cita.objects.create(
-            cliente=cliente,
-            servicio=servicio,
+
+
+        cita_existente = Cita.objects.filter(
             barbero=barbero,
-            adicionales=adicionales_str,
-            productos=productos_str,
-            fecha=request.POST.get("fecha"),
-            hora=request.POST.get("hora"),
-            estado="Pendiente",
-        )
+            fecha=fecha,
+            hora=hora
+        ).exclude(
+            estado="Cancelada"
+        ).first()
+
+        if cita_existente:
+
+            messages.error(
+                request,
+                f"❌ {barbero.nombre} ya tiene una cita el {fecha} a las {hora}. Selecciona otro horario."
+            )
+
+            return redirect("panel_cliente")
+
+        try:
+
+            Cita.objects.create(
+                cliente=cliente,
+                servicio=servicio,
+                barbero=barbero,
+                adicionales=adicionales_str,
+                productos=productos_str,
+                fecha=fecha,
+                hora=hora,
+                estado="Pendiente",
+            )
+
+        except IntegrityError:
+
+            messages.error(
+                request,
+                "❌ Ese horario fue reservado por otro cliente mientras realizabas la reserva."
+            )
+
+            return redirect("panel_cliente")
+
 
         for nombre_producto in productos_seleccionados:
+
             try:
-                producto = Producto.objects.get(nombre=nombre_producto)
+
+                producto = Producto.objects.get(
+                    nombre=nombre_producto
+                )
 
                 if producto.stock_actual > 0:
+
                     producto.stock_actual -= 1
                     producto.save()
 
@@ -102,13 +144,12 @@ def agendar_cita(request):
 
         messages.success(
             request,
-            f"✅ Cita agendada con {barbero.nombre}"
+            f"✅ Cita agendada exitosamente con {barbero.nombre}."
         )
 
         return redirect("panel_cliente")
 
     return redirect("panel_cliente")
-
 
 @login_required(login_url='login')
 def cancelar_cita_cliente(request, id):

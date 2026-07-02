@@ -31,58 +31,55 @@
             actualizarMenu();
         });
     </script>
-<script>
-    const preciosServicios = {
+    <script>
+        const preciosServicios = {
+        {% for servicio in servicios %}
+        "{{ servicio.id }}": { { servicio.precio } },
+        {% endfor %}
+       };
 
-{% for servicio in servicios %}
 
-"{{ servicio.id }}": {{ servicio.precio }},
+        const precioAdicional = 5000;
 
-{% endfor %}
+        function formatPeso(valor) {
+            return '$' + valor.toLocaleString('es-CO');
+        }
 
-};
+        function calcularTotal() {
+            const servicioRadio = document.querySelector('input[name="servicio"]:checked');
+            const checkboxesAdic = document.querySelectorAll('input[name="adicionales"]:checked');
+            const checkboxesProd = document.querySelectorAll('input[name="productos"]:checked');
 
-    const precioAdicional = 5000;
+            const servicioSeleccionado = servicioRadio ? servicioRadio.value : '';
+            const precioBase = preciosServicios[servicioSeleccionado] || 0;
+            const precioAdic = checkboxesAdic.length * precioAdicional;
 
-    function formatPeso(valor) {
-        return '$' + valor.toLocaleString('es-CO');
-    }
+            let precioProd = 0;
+            checkboxesProd.forEach(function (chk) {
+                precioProd += parseInt(chk.dataset.precio) || 0;
+            });
 
-    function calcularTotal() {
-        const servicioRadio  = document.querySelector('input[name="servicio"]:checked');
-        const checkboxesAdic = document.querySelectorAll('input[name="adicionales"]:checked');
-        const checkboxesProd = document.querySelectorAll('input[name="productos"]:checked');
+            const total = precioBase + precioAdic + precioProd;
 
-        const servicioSeleccionado = servicioRadio ? servicioRadio.value : '';
-const precioBase = preciosServicios[servicioSeleccionado] || 0;
-        const precioAdic     = checkboxesAdic.length * precioAdicional;
+            document.getElementById('precioBase').textContent = formatPeso(precioBase);
+            document.getElementById('precioAdicionales').textContent = formatPeso(precioAdic);
+            document.getElementById('precioProductos').textContent = formatPeso(precioProd);
+            document.getElementById('totalPagar').textContent = formatPeso(total);
+        }
 
-        let precioProd = 0;
-        checkboxesProd.forEach(function(chk) {
-            precioProd += parseInt(chk.dataset.precio) || 0;
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('input[name="servicio"]').forEach(function (radio) {
+                radio.addEventListener('change', calcularTotal);
+            });
+            document.querySelectorAll('input[name="adicionales"]').forEach(function (chk) {
+                chk.addEventListener('change', calcularTotal);
+            });
+            document.querySelectorAll('input[name="productos"]').forEach(function (chk) {
+                chk.addEventListener('change', calcularTotal);
+            });
+            calcularTotal();
         });
-
-        const total = precioBase + precioAdic + precioProd;
-
-        document.getElementById('precioBase').textContent        = formatPeso(precioBase);
-        document.getElementById('precioAdicionales').textContent = formatPeso(precioAdic);
-        document.getElementById('precioProductos').textContent   = formatPeso(precioProd);
-        document.getElementById('totalPagar').textContent        = formatPeso(total);
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('input[name="servicio"]').forEach(function(radio) {
-            radio.addEventListener('change', calcularTotal);
-        });
-        document.querySelectorAll('input[name="adicionales"]').forEach(function(chk) {
-            chk.addEventListener('change', calcularTotal);
-        });
-        document.querySelectorAll('input[name="productos"]').forEach(function(chk) {
-            chk.addEventListener('change', calcularTotal);
-        });
-        calcularTotal();
-    });
-</script>
+    </script>
 </head>
 
 <body>
@@ -91,9 +88,10 @@ const precioBase = preciosServicios[servicioSeleccionado] || 0;
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-    <img src="{% static 'logo.jpeg' %}" alt="Logo" style="height:40px; width:40px; object-fit:cover; border-radius:50%; margin-right:8px;">
-    Barber<span>Springfield</span>
-</a>
+                <img src="{% static 'logo.jpeg' %}" alt="Logo"
+                    style="height:40px; width:40px; object-fit:cover; border-radius:50%; margin-right:8px;">
+                Barber<span>Springfield</span>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -126,7 +124,8 @@ const precioBase = preciosServicios[servicioSeleccionado] || 0;
                 </div>
                 <div class="modal-footer border-warning">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-primary-custom"onclick="window.location.href='{% url 'logout' %}'">Cerrar Sesión</button>
+                    <button class="btn btn-primary-custom" onclick="window.location.href='{% url 'logout' %}'">Cerrar
+                        Sesión</button>
                 </div>
             </div>
         </div>
@@ -183,124 +182,122 @@ const precioBase = preciosServicios[servicioSeleccionado] || 0;
             </div>
         </div>
 
-<!-- Formulario nuevo turno -->
-<div id="formularioTurno" class="form-turno mb-5" style="display: none;">
-    <h4 class="text-yellow mb-4"><i class="bi bi-calendar-plus"></i> Nueva cita</h4>
-    <form method="POST" action="{% url 'agendar_cita' %}">
-        {% csrf_token %}
-        <div class="row g-3">
+        <!-- Formulario nuevo turno -->
+        <div id="formularioTurno" class="form-turno mb-5" style="display: none;">
+            <h4 class="text-yellow mb-4"><i class="bi bi-calendar-plus"></i> Nueva cita</h4>
+            <form method="POST" action="{% url 'agendar_cita' %}">
+                {% csrf_token %}
+                <div class="row g-3">
 
-            <!-- Corte base -->
-            <div class="col-md-4">
-    <label class="form-label-custom">✂️ Cortes</label>
-    <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
-        {% for servicio in servicios %}
-        <div class="form-check mb-2">
-            <input
-    class="form-check-input servicio-radio"
-    type="radio"
-    name="servicio"
-    value="{{ servicio.id }}"
-    id="serv{{ servicio.id }}"
-    data-precio="{{ servicio.precio }}"
-    {% if forloop.first %}checked{% endif %}
->
-            <label class="form-check-label text-light" for="serv{{ servicio.id }}">
-                ✂️ {{ servicio.nombre }}
-                <small class="text-yellow">${{ servicio.precio|floatformat:0 }}</small>
-            </label>
-        </div>
-        {% endfor %}
-    </div>
-</div>
+                    <!-- Corte base -->
+                    <div class="col-md-4">
+                        <label class="form-label-custom">✂️ Cortes</label>
+                        <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
+                            {% for servicio in servicios %}
+                            <div class="form-check mb-2">
+                                <input class="form-check-input servicio-radio" type="radio" name="servicio"
+                                    value="{{ servicio.id }}" id="serv{{ servicio.id }}"
+                                    data-precio="{{ servicio.precio }}" {% if forloop.first %}checked{% endif %}>
+                                <label class="form-check-label text-light" for="serv{{ servicio.id }}">
+                                    ✂️ {{ servicio.nombre }}
+                                    <small class="text-yellow">${{ servicio.precio|floatformat:0 }}</small>
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
 
-            <!-- Adicionales -->
-            <div class="col-md-4">
-                <label class="form-label-custom">➕ Adicionales</label>
-                <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
-                    <div class="form-check mb-2">
-    <input class="form-check-input" type="checkbox" name="adicionales" value="Arreglo de barba" id="chkBarba">
-    <label class="form-check-label text-light" for="chkBarba">
-        ✂️ Arreglo de barba <small class="text-yellow">$5.000</small>
-    </label>
-</div>
-<div class="form-check mb-2">
-    <input class="form-check-input" type="checkbox" name="adicionales" value="Cejas" id="chkCejas">
-    <label class="form-check-label text-light" for="chkCejas">
-        👁️ Cejas <small class="text-yellow">$5.000</small>
-    </label>
-</div>
-<div class="form-check">
-    <input class="form-check-input" type="checkbox" name="adicionales" value="Diseño y líneas" id="chkDiseno">
-    <label class="form-check-label text-light" for="chkDiseno">
-        🎨 Diseño / líneas <small class="text-yellow">$5.000</small>
-    </label>
-</div>
+                    <!-- Adicionales -->
+                    <div class="col-md-4">
+                        <label class="form-label-custom">➕ Adicionales</label>
+                        <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #3F2E22;">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="adicionales"
+                                    value="Arreglo de barba" id="chkBarba">
+                                <label class="form-check-label text-light" for="chkBarba">
+                                    ✂️ Arreglo de barba <small class="text-yellow">$5.000</small>
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="adicionales" value="Cejas"
+                                    id="chkCejas">
+                                <label class="form-check-label text-light" for="chkCejas">
+                                    👁️ Cejas <small class="text-yellow">$5.000</small>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="adicionales"
+                                    value="Diseño y líneas" id="chkDiseno">
+                                <label class="form-check-label text-light" for="chkDiseno">
+                                    🎨 Diseño / líneas <small class="text-yellow">$5.000</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total en tiempo real -->
+                    <div class="col-12">
+                        <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #F4C542;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-light-brown">Corte:</span>
+                                <span class="text-yellow" id="precioBase">$0</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <span class="text-light-brown">Adicionales:</span>
+                                <span class="text-yellow" id="precioAdicionales">$0</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <span class="text-light-brown">Productos:</span>
+                                <span class="text-yellow" id="precioProductos">$0</span>
+                            </div>
+                            <hr style="border-color:#3F2E22;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="text-white">Total a pagar:</strong>
+                                <strong class="text-yellow fs-5" id="totalPagar">$0</strong>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Fecha -->
+                    <div class="col-md-4">
+                        <label class="form-label-custom">📅 Fecha <small
+                                class="text-light-brown">(DD/MM/AAAA)</small></label>
+                        <input type="date" class="form-control bg-dark-input" name="fecha" id="fecha" required>
+                    </div>
+
+                    <!-- Hora -->
+                    <div class="col-md-4">
+                        <label class="form-label-custom">⏰ Hora</label>
+                        <select class="form-select bg-dark-input" name="hora">
+                            <option>10:00 AM</option>
+                            <option>11:30 AM</option>
+                            <option>01:00 PM</option>
+                            <option>02:30 PM</option>
+                            <option>04:00 PM</option>
+                            <option>05:30 PM</option>
+                        </select>
+                    </div>
+
+                    <!-- Barbero -->
+                    <div class="col-md-4">
+                        <label class="form-label-custom">💈 Barbero</label>
+                        <select class="form-select bg-dark-input" name="barbero">
+                            {% for barbero in barberos %}
+                            <option value="{{ barbero.id }}">
+                                {{ barbero.nombre }} - {{ barbero.especialidad }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
                 </div>
-            </div>
-
-            <!-- Total en tiempo real -->
-<div class="col-12">
-    <div class="p-3 rounded" style="background-color:#2A211B; border:1px solid #F4C542;">
-        <div class="d-flex justify-content-between align-items-center">
-            <span class="text-light-brown">Corte:</span>
-            <span class="text-yellow" id="precioBase">$0</span>
+                <div class="mt-4 d-flex gap-2 justify-content-end">
+                    <button type="button" class="btn btn-secondary" id="btnCancelarForm">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-custom">Reservar</button>
+                </div>
+            </form>
         </div>
-        <div class="d-flex justify-content-between align-items-center mt-1">
-            <span class="text-light-brown">Adicionales:</span>
-            <span class="text-yellow" id="precioAdicionales">$0</span>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mt-1">
-            <span class="text-light-brown">Productos:</span>
-            <span class="text-yellow" id="precioProductos">$0</span>
-        </div>
-        <hr style="border-color:#3F2E22;">
-        <div class="d-flex justify-content-between align-items-center">
-            <strong class="text-white">Total a pagar:</strong>
-            <strong class="text-yellow fs-5" id="totalPagar">$0</strong>
-        </div>
-    </div>
-</div>
-
-
-            <!-- Fecha -->
-            <div class="col-md-4">
-    <label class="form-label-custom">📅 Fecha <small class="text-light-brown">(DD/MM/AAAA)</small></label>
-    <input type="date" class="form-control bg-dark-input" name="fecha" id="fecha" required>
-</div>
-
-            <!-- Hora -->
-            <div class="col-md-4">
-                <label class="form-label-custom">⏰ Hora</label>
-                <select class="form-select bg-dark-input" name="hora">
-                    <option>10:00 AM</option>
-                    <option>11:30 AM</option>
-                    <option>01:00 PM</option>
-                    <option>02:30 PM</option>
-                    <option>04:00 PM</option>
-                    <option>05:30 PM</option>
-                </select>
-            </div>
-
-            <!-- Barbero -->
-            <div class="col-md-4">
-                <label class="form-label-custom">💈 Barbero</label>
-                <select class="form-select bg-dark-input" name="barbero">
-    {% for barbero in barberos %}
-    <option value="{{ barbero.id }}">
-    {{ barbero.nombre }} - {{ barbero.especialidad }}
-</option>
-    {% endfor %}
-</select>
-            </div>
-
-        </div>
-        <div class="mt-4 d-flex gap-2 justify-content-end">
-            <button type="button" class="btn btn-secondary" id="btnCancelarForm">Cancelar</button>
-            <button type="submit" class="btn btn-primary-custom">Reservar</button>
-        </div>
-    </form>
-</div>
 
         <!-- Lista de turnos -->
         <div class="row g-4" id="turnos">
@@ -317,17 +314,20 @@ const precioBase = preciosServicios[servicioSeleccionado] || 0;
                                 <div>
                                     <strong class="text-yellow">{{ cita.servicio }}</strong><br>
                                     <small class="text-light-brown">
-    📅 {{ cita.fecha|date:"d/m/Y" }} | ⏰ {{ cita.hora }} | 💈 {{ cita.barbero }}
-</small>
-{% if cita.adicionales and cita.adicionales != 'Ninguno' %}
-<small class="text-yellow d-block mt-1">➕ {{ cita.adicionales }}</small>
-{% endif %}
+                                        📅 {{ cita.fecha|date:"d/m/Y" }} | ⏰ {{ cita.hora }} | 💈 {{ cita.barbero }}
+                                    </small>
+                                    {% if cita.adicionales and cita.adicionales != 'Ninguno' %}
+                                    <small class="text-yellow d-block mt-1">➕ {{ cita.adicionales }}</small>
+                                    {% endif %}
                                 </div>
                                 <div class="mt-2 mt-sm-0 d-flex align-items-center gap-2">
                                     {% if cita.estado == "Confirmada" %}
-                                    <span class="badge-confirmado">Confirmada</span> {% elif cita.estado == "Pendiente" %}
+                                    <span class="badge-confirmado">Confirmada</span> {% elif cita.estado == "Pendiente"
+                                    %}
                                     <span class="badge bg-warning text-dark">Pendiente</span> {% endif %}
-                                    <a href="{% url 'cancelar_cita_cliente' cita.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Cancelar este turno?')">
+                                    <a href="{% url 'cancelar_cita_cliente' cita.id %}"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('¿Cancelar este turno?')">
                                         Cancelar
                                     </a>
                                 </div>
@@ -367,52 +367,99 @@ const precioBase = preciosServicios[servicioSeleccionado] || 0;
 
         <!-- Servicios rápidos -->
         <div class="stat-card p-4 mt-4">
-    <h5 class="text-yellow mb-3"><i class="bi bi-tags"></i> Servicios destacados</h5>
-    <div class="row g-3">
-        <div class="col-6 col-md-4">
-            <div class="servicio-rapido text-center">
-                <i class="bi bi-scissors"></i>
-                <small class="d-block text-light">Tape Fade</small>
-                <small class="text-yellow">$14k</small>
-            </div>
-        </div>
-        <div class="col-6 col-md-4">
-            <div class="servicio-rapido text-center">
-                <i class="bi bi-wind"></i>
-                <small class="d-block text-light">Mullet</small>
-                <small class="text-yellow">$14k</small>
-            </div>
-        </div>
-        <div class="col-6 col-md-4">
-            <div class="servicio-rapido text-center">
-                <i class="bi bi-chat-left-text"></i>
-                <small class="d-block text-light">Corte Clásico</small>
-                <small class="text-yellow">$12k</small>
-            </div>
-        </div>
-        <div class="col-6 col-md-4">
-            <div class="servicio-rapido text-center">
-                <i class="bi bi-fullscreen-exit"></i>
-                <small class="d-block text-light">Buzz Cut</small>
-                <small class="text-yellow">$10k</small>
-            </div>
-        </div>
-        <div class="col-6 col-md-4">
-            <div class="servicio-rapido text-center">
-                <i class="bi bi-layers"></i>
-                <small class="d-block text-light">Corte Texturizado</small>
-                <small class="text-yellow">$13k</small>
-            </div>
-        </div>
-        <div class="col-6 col-md-4">
-            <div class="servicio-rapido text-center">
-                <i class="bi bi-plus-circle"></i>
-                <small class="d-block text-light">Adicionales</small>
-                <small class="text-yellow">Desde $5k</small>
+            <h5 class="text-yellow mb-3"><i class="bi bi-tags"></i> Servicios destacados</h5>
+            <div class="row g-3">
+                <div class="col-6 col-md-4">
+                    <div class="servicio-rapido text-center">
+                        <i class="bi bi-scissors"></i>
+                        <small class="d-block text-light">Tape Fade</small>
+                        <small class="text-yellow">$14k</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="servicio-rapido text-center">
+                        <i class="bi bi-wind"></i>
+                        <small class="d-block text-light">Mullet</small>
+                        <small class="text-yellow">$14k</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="servicio-rapido text-center">
+                        <i class="bi bi-chat-left-text"></i>
+                        <small class="d-block text-light">Corte Clásico</small>
+                        <small class="text-yellow">$12k</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="servicio-rapido text-center">
+                        <i class="bi bi-fullscreen-exit"></i>
+                        <small class="d-block text-light">Buzz Cut</small>
+                        <small class="text-yellow">$10k</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="servicio-rapido text-center">
+                        <i class="bi bi-layers"></i>
+                        <small class="d-block text-light">Corte Texturizado</small>
+                        <small class="text-yellow">$13k</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="servicio-rapido text-center">
+                        <i class="bi bi-plus-circle"></i>
+                        <small class="d-block text-light">Adicionales</small>
+                        <small class="text-yellow">Desde $5k</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <!-- Modal de Mensajes -->
+    <div class="modal fade" id="modalMensaje" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-warning">
+
+                <div class="modal-header border-warning">
+                    <h5 class="modal-title text-warning">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        Notificación
+                    </h5>
+
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body text-center">
+
+                    {% for message in messages %}
+
+                    {% if message.tags == 'success' %}
+                    <i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+
+                    {% elif message.tags == 'error' %}
+                    <i class="bi bi-x-circle-fill text-danger fs-1 mb-3"></i>
+
+                    {% elif message.tags == 'warning' %}
+                    <i class="bi bi-exclamation-triangle-fill text-warning fs-1 mb-3"></i>
+
+                    {% else %}
+                    <i class="bi bi-info-circle-fill text-info fs-1 mb-3"></i>
+                    {% endif %}
+
+                    <p class="fs-5">{{ message }}</p>
+
+                    {% endfor %}
+
+                </div>
+
+                <div class="modal-footer border-warning">
+                    <button class="btn btn-primary-custom" data-bs-dismiss="modal">
+                        Entendido
+                    </button>
+                </div>
+
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -443,6 +490,14 @@ const precioBase = preciosServicios[servicioSeleccionado] || 0;
             btnAgendar.style.display = 'block';
         });
     </script>
+    {% if messages %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var modal = new bootstrap.Modal(document.getElementById('modalMensaje'));
+            modal.show();
+        });
+    </script>
+    {% endif %}
 </body>
 
 </html>
